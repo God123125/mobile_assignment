@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:khmer_cultur_app/screens/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -133,7 +134,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: double.infinity,
                           height: 60,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(builder: (context) => HomeScreen()),
+                                (Route<dynamic> route) => false,
+                              );
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                               shape: RoundedRectangleBorder(
@@ -145,6 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
+                                color: Colors.white
                               ),
                             ),
                           ),
@@ -156,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Text("Don’t have an account? "),
                             TextButton(
                               onPressed: () {},
-                              child: Text('SIGN UP'),
+                              child: Text('Sign Up',style: TextStyle(color: Colors.blue),),
                             ),
                           ],
                         ),
