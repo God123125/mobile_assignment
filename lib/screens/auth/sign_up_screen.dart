@@ -1,38 +1,53 @@
 import 'package:flutter/material.dart';
-import 'package:khmer_cultur_app/screens/home_screen.dart';
+import 'package:khmer_cultur_app/screens/auth/login_screen.dart';
+import 'package:khmer_cultur_app/widgets/bg_login_widget.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   bool obscureText = true;
   bool rememberMe = false;
-  late Size size = MediaQuery.of(context).size;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(25),
+            ),
+            child: Icon(Icons.chevron_left, size: 32, color: Colors.grey),
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: Stack(
         children: [
-          SizedBox.expand(
-            child: Image.asset('assets/images/bg_login.png', fit: BoxFit.cover),
-          ),
+          BgLoginWidget(),
           Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Column(
                 children: [
                   Text(
-                    'Log In',
+                    'Sign Up',
                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold,color: Colors.white),
                   ),
                   SizedBox(height: 16),
                   Text(
-                    'Please sign in to your existing account',
+                    'Please sign up to get started',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
@@ -44,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    height: size.height / 1.43,
+                    height: MediaQuery.of(context).size.height / 1.35,
                     padding: EdgeInsets.symmetric(horizontal: 24,vertical: 26),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -56,7 +71,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text("Username"),
+                        SizedBox(height: 4),
+                        TextField(
+                          decoration: InputDecoration(
+                            hintText: 'Enter Username',
+                            hintStyle: TextStyle(color: Colors.grey,fontSize: 14),
+                            filled: true,
+                            fillColor: Color(0xFFF0F5FA),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 22),
+                          ),
+                        ),
+                        SizedBox(height: 16),
                         Text("Email"),
+                        SizedBox(height: 4),
                         TextField(
                           decoration: InputDecoration(
                             hintText: 'example@gmail.com',
@@ -67,11 +99,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
                             ),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 22),
                           ),
                         ),
                         SizedBox(height: 16),
                         Text("Password"),
+                        SizedBox(height: 4),
                         TextField(
                           obscureText: obscureText,
                           decoration: InputDecoration(
@@ -83,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
                             ),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 22),
                             suffixIcon: IconButton(
                               icon: Icon(obscureText? Icons.visibility_off: Icons.visibility,color: Colors.grey,
                               ),
@@ -95,39 +128,31 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: rememberMe,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      rememberMe = value!;
-                                    });
-                                  },
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  fillColor: WidgetStateProperty.resolveWith<Color?>(
-                                    (states) {
-                                      if (states.contains(WidgetState.selected)) {
-                                        return Colors.blue;
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                                Text('Remember me'),
-                              ],
+                        SizedBox(height: 16),
+                        Text("Re-Type Password"),
+                        SizedBox(height: 4),
+                        TextField(
+                          obscureText: obscureText,
+                          decoration: InputDecoration(
+                            hintText: 'Confirm password',
+                            hintStyle: TextStyle(color: Colors.grey,fontSize: 14),
+                            filled: true,
+                            fillColor: Color(0xFFF0F5FA),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
                             ),
-                            TextButton(
-                              onPressed: () {},
-                              child: Text('Forgot Password',style: TextStyle(color: Colors.blue),),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 22),
+                            suffixIcon: IconButton(
+                              icon: Icon(obscureText? Icons.visibility_off: Icons.visibility,color: Colors.grey,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  obscureText = !obscureText;
+                                });
+                              },
                             ),
-                          ],
+                          ),
                         ),
                         SizedBox(height: 70),
                         SizedBox(
@@ -135,10 +160,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 60,
                           child: ElevatedButton(
                             onPressed: () {
-                              Navigator.pushAndRemoveUntil(
+                              Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => HomeScreen()),
-                                (Route<dynamic> route) => false,
+                                MaterialPageRoute(builder: (context) => LoginScreen()),
                               );
                             },
                             style: ElevatedButton.styleFrom(
@@ -148,7 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             child: Text(
-                              'LOG IN',
+                              'SIGN UP',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -157,30 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text("Don’t have an account? "),
-                            TextButton(
-                              onPressed: () {},
-                              child: Text('Sign Up',style: TextStyle(color: Colors.blue),),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 16),
-                        Center(child: Text('Or')),
-                        SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            socialButton(Icons.facebook, Colors.blue[800]!),
-                            SizedBox(width: 24),
-                            socialButton(Icons.alternate_email,Colors.lightBlue,),
-                            SizedBox(width: 24),
-                            socialButton(Icons.apple, Colors.black),
-                          ],
-                        ),
+                        
                       ],
                     ),
                   ),
@@ -189,17 +190,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
           ),
         ],
-      ),
-    );
-  }
-
-  Widget socialButton(IconData icon, Color color) {
-    return CircleAvatar(
-      radius: 32,
-      backgroundColor: color,
-      child: IconButton(
-        icon: Icon(icon, color: Colors.white, size: 28),
-        onPressed: () {},
       ),
     );
   }
