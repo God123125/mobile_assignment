@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; 
 
 class CodeBoxWidget extends StatelessWidget {
   final TextEditingController controller;
-  final FocusNode? focusNode;
+  final FocusNode focusNode;
   final FocusNode? nextFocus;
+  final FocusNode? previousFocus;
 
   const CodeBoxWidget({
     super.key,
     required this.controller,
-    this.focusNode,
+    required this.focusNode,
     this.nextFocus,
+    this.previousFocus,
   });
 
   @override
@@ -19,7 +22,7 @@ class CodeBoxWidget extends StatelessWidget {
       height: 70,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: Color(0xFFF0F5FA),
+        color: const Color(0xFFF0F5FA),
         borderRadius: BorderRadius.circular(12),
       ),
       child: TextField(
@@ -28,17 +31,27 @@ class CodeBoxWidget extends StatelessWidget {
         keyboardType: TextInputType.number,
         textAlign: TextAlign.center,
         maxLength: 1,
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        decoration: InputDecoration(
+        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+        ],
+        decoration: const InputDecoration(
           counterText: '',
           border: InputBorder.none,
+          hintStyle: TextStyle(color: Colors.grey),
         ),
         onChanged: (value) {
           if (value.length == 1) {
+            // Move to next box
             if (nextFocus != null) {
               FocusScope.of(context).requestFocus(nextFocus);
             } else {
-              FocusScope.of(context).unfocus(); // hide keyboard if last box
+              focusNode.unfocus(); // Last box
+            }
+          } else if (value.isEmpty) {
+            // If deleted, move back
+            if (previousFocus != null) {
+              FocusScope.of(context).requestFocus(previousFocus);
             }
           }
         },

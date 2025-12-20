@@ -62,7 +62,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       Text(
                         pages[index]['title']!,
                         style: TextStyle(
-                          fontSize: 24,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -71,7 +71,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         pages[index]['description']!,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 12,
                           color: Colors.grey.shade600,
                         ),
                       ),
@@ -128,7 +128,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   currentIndex == pages.length - 1 ? 'Get Started' : 'Next',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -144,7 +144,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     MaterialPageRoute(builder: (context) => LoginScreen()),
                   );
                 },
-                child: Text('Skip',style: TextStyle(color: Colors.black54,fontWeight: FontWeight.bold,fontSize: 16,),),
+                child: Text('Skip',style: TextStyle(color: Colors.black54,fontWeight: FontWeight.bold,fontSize: 14,),),
               ),
             ),
           ],

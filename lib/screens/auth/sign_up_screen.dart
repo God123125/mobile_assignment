@@ -11,12 +11,12 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   bool obscureText = true;
-  bool rememberMe = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -37,89 +37,92 @@ class _SignUpScreenState extends State<SignUpScreen> {
         children: [
           BgLoginWidget(),
           Column(
-            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Column(
-                children: [
-                  Text(
-                    'Sign Up',
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold,color: Colors.white),
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    'Please sign up to get started',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-              //card  login
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    height: MediaQuery.of(context).size.height / 1.35,
-                    padding: EdgeInsets.symmetric(horizontal: 24,vertical: 26),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
+              Padding(
+                padding: EdgeInsets.fromLTRB(24, 110, 24, 16),
+                child: Column(
+                  children: [
+                    Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
                     ),
+                    SizedBox(height: 14),
+                    Text(
+                      'Please sign up to get started',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 14, color: Colors.grey[300]),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.only(top: 20), 
+                  padding: EdgeInsets.only(top: 18,right: 18,left: 18),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Username"),
+                        Text("Username", style: TextStyle(fontSize: 12)),
                         SizedBox(height: 4),
                         TextField(
                           decoration: InputDecoration(
                             hintText: 'Enter Username',
-                            hintStyle: TextStyle(color: Colors.grey,fontSize: 14),
+                            hintStyle: TextStyle(color: Colors.grey, fontSize: 12),
                             filled: true,
                             fillColor: Color(0xFFF0F5FA),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
                             ),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 22),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                           ),
                         ),
-                        SizedBox(height: 16),
-                        Text("Email"),
+                        SizedBox(height: 14),
+                        Text("Email", style: TextStyle(fontSize: 12)),
                         SizedBox(height: 4),
                         TextField(
+                          keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             hintText: 'example@gmail.com',
-                            hintStyle: TextStyle(color: Colors.grey,fontSize: 14),
+                            hintStyle: TextStyle(color: Colors.grey, fontSize: 12),
                             filled: true,
                             fillColor: Color(0xFFF0F5FA),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
                             ),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 22),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                           ),
                         ),
-                        SizedBox(height: 16),
-                        Text("Password"),
+                        SizedBox(height: 14),
+                        Text("Password", style: TextStyle(fontSize: 12)),
                         SizedBox(height: 4),
                         TextField(
                           obscureText: obscureText,
                           decoration: InputDecoration(
                             hintText: 'Enter password',
-                            hintStyle: TextStyle(color: Colors.grey,fontSize: 14),
+                            hintStyle: TextStyle(color: Colors.grey, fontSize: 12),
                             filled: true,
                             fillColor: Color(0xFFF0F5FA),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
                             ),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 22),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                             suffixIcon: IconButton(
-                              icon: Icon(obscureText? Icons.visibility_off: Icons.visibility,color: Colors.grey,
-                              ),
+                              icon: Icon(obscureText ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
                               onPressed: () {
                                 setState(() {
                                   obscureText = !obscureText;
@@ -128,24 +131,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 16),
-                        Text("Re-Type Password"),
+                        SizedBox(height: 14),
+                        Text("Re-Type Password", style: TextStyle(fontSize: 12)),
                         SizedBox(height: 4),
                         TextField(
                           obscureText: obscureText,
                           decoration: InputDecoration(
                             hintText: 'Confirm password',
-                            hintStyle: TextStyle(color: Colors.grey,fontSize: 14),
+                            hintStyle: TextStyle(color: Colors.grey, fontSize: 12),
                             filled: true,
                             fillColor: Color(0xFFF0F5FA),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
                             ),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 22),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                             suffixIcon: IconButton(
-                              icon: Icon(obscureText? Icons.visibility_off: Icons.visibility,color: Colors.grey,
-                              ),
+                              icon: Icon(obscureText ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
                               onPressed: () {
                                 setState(() {
                                   obscureText = !obscureText;
@@ -154,10 +156,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 70),
+                        SizedBox(height: 40), 
                         SizedBox(
                           width: double.infinity,
-                          height: 60,
+                          height: 50,
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.push(
@@ -174,18 +176,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             child: Text(
                               'SIGN UP',
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white
+                                color: Colors.white,
                               ),
                             ),
                           ),
                         ),
-                        
+                        SizedBox(height: 20), // Safe bottom padding
                       ],
                     ),
                   ),
-                ],
+                ),
               ),
             ],
           ),
