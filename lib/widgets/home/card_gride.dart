@@ -1,27 +1,23 @@
 import 'package:flutter/material.dart';
 
-class CardGrid extends StatefulWidget {
+class CardGridHome extends StatefulWidget {
   final String title;
-  final String imageUrl;
+  final String image;
 
-  const CardGrid({
-    super.key,
-    required this.title,
-    required this.imageUrl,
-  });
+  const CardGridHome({super.key, required this.title, required this.image});
 
   @override
-  State<CardGrid> createState() => _CardGridState();
+  State<CardGridHome> createState() => _CardGridHomeState();
 }
 
-class _CardGridState extends State<CardGrid> {
+class _CardGridHomeState extends State<CardGridHome> {
   bool isFavorite = false;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white, 
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -36,19 +32,19 @@ class _CardGridState extends State<CardGrid> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),),
-                image: DecorationImage(
-                  image: NetworkImage(widget.imageUrl),
-                  fit: BoxFit.cover,
-                ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
+              child: Image.asset(
+                widget.image,
+                width: double.infinity,
+                fit: BoxFit.cover,
               ),
             ),
           ),
+
           Padding(
             padding: EdgeInsets.all(10),
             child: Text(

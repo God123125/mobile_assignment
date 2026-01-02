@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:khmer_cultur_app/elements/card_gride.dart';
-import 'package:khmer_cultur_app/screens/search_screen.dart';
+import 'package:khmer_cultur_app/screens/menu_screen.dart';
+import 'package:khmer_cultur_app/widgets/home/card_gride.dart';
 import 'package:khmer_cultur_app/widgets/bottom_nav.dart';
+import 'package:khmer_cultur_app/widgets/card_box_widget.dart';
+import 'package:khmer_cultur_app/widgets/search_box_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,33 +26,27 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, String>> products = [
     {
       "title": "Spacal promotion from Khmer food",
-      "imageUrl":
-          "https://m.media-amazon.com/images/I/81eB+7+CkUL._AC_UF1000,1000_QL80_.jpg",
+      "image":"assets/images/welcom1.png",
     },
     {
       "title": "1984",
-      "imageUrl":
-          "https://images-na.ssl-images-amazon.com/images/I/71kxa1-0mfL.jpg",
+      "image":"assets/images/welcom1.png",
     },
     {
       "title": "To Kill a Mockingbird",
-      "imageUrl":
-          "https://cdn.britannica.com/21/182021-050-666DB6B1/book-cover-To-Kill-a-Mockingbird-many-1961.jpg",
+      "image":"assets/images/welcom1.png",
     },
     {
       "title": "The Great Gatsby",
-      "imageUrl":
-          "https://m.media-amazon.com/images/I/81eB+7+CkUL._AC_UF1000,1000_QL80_.jpg",
+      "image":"assets/images/welcom1.png",
     },
     {
       "title": "1984",
-      "imageUrl":
-          "https://images-na.ssl-images-amazon.com/images/I/71kxa1-0mfL.jpg",
+      "image":"assets/images/welcom1.png",
     },
     {
       "title": "To Kill a Mockingbird",
-      "imageUrl":
-          "https://cdn.britannica.com/21/182021-050-666DB6B1/book-cover-To-Kill-a-Mockingbird-many-1961.jpg",
+      "image":"assets/images/welcom1.png",
     },
   ];
 
@@ -109,77 +105,13 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Stack(
-              children: [
-                CircleAvatar(
-                  backgroundColor: Colors.black,
-                  child: Icon(Icons.shopping_bag_outlined, color: Colors.white),
-                ),
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: CircleAvatar(
-                    radius: 10,
-                    backgroundColor: Colors.blue,
-                    child: Text(
-                      "2",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          CardBox(),
         ],
       ),
       body: Column(
         children: [
-          Padding(
-            padding: EdgeInsets.all(5),
-            child: Padding(
-              padding: EdgeInsets.all(5),
-              child: TextField(
-                readOnly: true,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const SearchScreen()),
-                  );
-                },
-                style: TextStyle(fontSize: 12),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  hintText: "Search dishes, restaurants",
-                  hintStyle: TextStyle(
-                    color: Colors.grey.shade400,
-                    fontSize: 12,
-                  ),
-                  prefixIcon: Icon(Icons.search, size: 20, color: Colors.grey),
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 18,
-                    horizontal: 10,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey.shade400),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey.shade500),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          SearchBox(),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
@@ -206,37 +138,44 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemBuilder: (context, index) {
                           final item = categories[index];
               
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 15,
-                              vertical: 8,
-                            ),
-                            child: Column(
-                              children: [
-                                Container(
-                                  width: 60,
-                                  height: 60,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(35),
-                                    color: Colors.grey.shade200,
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(35),
-                                    child: Image.asset(
-                                      item["image"]!,
-                                      fit: BoxFit.cover,
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const MenuScreen(),
+                                ),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 8,),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: 60,
+                                    height: 60,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(35),
+                                      color: Colors.grey.shade200,
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(35),
+                                      child: Image.asset(
+                                        item["image"]!,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  item["title"]!,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
+                                  SizedBox(height: 4),
+                                  Text(
+                                    item["title"]!,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           );
                         },
@@ -248,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Container(
                       width: double.infinity,
                       height: 400,
-                      color: Colors.amber,
+                      color: Colors.transparent,
                       child: Image.asset(
                         "assets/images/promo1.png",
                         fit: BoxFit.cover,
@@ -268,9 +207,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisSpacing: 16,
                       ),
                       itemBuilder: (context, index) {
-                        return CardGrid(
+                        return CardGridHome(
                           title: products[index]['title']!,
-                          imageUrl: products[index]['imageUrl']!,
+                          image: products[index]['image']!,
                         );
                       },
                     ),

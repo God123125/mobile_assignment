@@ -24,7 +24,7 @@ class SearchWidget extends StatelessWidget {
         style: TextStyle(fontSize: 12),
         decoration: InputDecoration(
           filled: true,
-          fillColor: Colors.white,
+          fillColor: Colors.grey.shade100,
           hintText: hintText,
           hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 12),
           prefixIcon: Padding(
@@ -48,16 +48,16 @@ class SearchWidget extends StatelessWidget {
             },
           ),
           contentPadding: EdgeInsets.symmetric(
-            vertical: 18,
+            vertical: 20,
             horizontal: 10,
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: Colors.grey.shade400),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: Colors.grey.shade500),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
           ),
         ),
       ),

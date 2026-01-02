@@ -2,14 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:khmer_cultur_app/screens/auth/verification_screen.dart';
 import 'package:khmer_cultur_app/widgets/bg_login_widget.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
+class ForgotPasswordScreen extends StatelessWidget {
   const ForgotPasswordScreen({super.key});
 
-  @override
-  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
-}
-
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,7 +56,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               Expanded(
                 child: Container(
                   width: double.infinity,
-                  padding: EdgeInsets.only(top: 18,right: 18,left: 18),
+                  padding: EdgeInsets.only(top: 18, right: 18, left: 18),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
@@ -70,7 +65,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                   ),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text("Email", style: TextStyle(fontSize: 12)),
@@ -98,7 +92,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => VerificationScreen(),
+                                builder: (_) => VerificationScreen(),
                               ),
                             );
                           },

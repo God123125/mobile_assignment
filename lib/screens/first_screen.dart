@@ -2,29 +2,22 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:khmer_cultur_app/screens/welcome_screen.dart';
 
-class FirstScreen extends StatefulWidget {
+class FirstScreen extends StatelessWidget {
   const FirstScreen({super.key});
 
   @override
-  State<FirstScreen> createState() => _FirstScreenState();
-}
-
-class _FirstScreenState extends State<FirstScreen> {
-
-  @override
-  void initState() {
-    super.initState();
-    
-    Future.delayed(const Duration(seconds: 1), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-      );
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(seconds: 1), () {
+        if (context.mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+          );
+        }
+      });
+    });
+
     return Scaffold(
       body: SizedBox.expand(
         child: Image.asset(
