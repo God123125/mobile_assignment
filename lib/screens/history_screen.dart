@@ -55,46 +55,48 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(elevation: 0, backgroundColor: Colors.white, automaticallyImplyLeading: false),
-      body: Column(
-        children: [
-          SearchBox(),
-          // Tabs
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [_buildTab('Ongoing', 0), SizedBox(width: 32), _buildTab('History', 1)],
-            ),
-          ),
-          SizedBox(height: 16),
-          // Content
-          Expanded(
-            child: SingleChildScrollView(
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            SearchBox(),
+            // Tabs
+            Container(
               padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Food Section
-                  _buildSectionHeader('Food', 'Completed'),
-                  SizedBox(height: 12),
-                  ...foodOrders.map((order) => _buildHistoryOrderItem(order)),
-                  SizedBox(height: 24),
-                  // Product Section
-                  _buildSectionHeader('Product', 'Completed'),
-                  SizedBox(height: 12),
-                  ...productOrders.map((order) => _buildHistoryOrderItem(order)),
-                  SizedBox(height: 24),
-                  // Drink Section
-                  _buildSectionHeader('Drink', 'Canceled'),
-                  SizedBox(height: 12),
-                  ...drinkOrders.map((order) => _buildHistoryOrderItem(order)),
-                  SizedBox(height: 24),
-                ],
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [_buildTab('Ongoing', 0), SizedBox(width: 32), _buildTab('History', 1)],
               ),
             ),
-          ),
-        ],
+            SizedBox(height: 16),
+            // Content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Food Section
+                    _buildSectionHeader('Food', 'Completed'),
+                    SizedBox(height: 12),
+                    ...foodOrders.map((order) => _buildHistoryOrderItem(order)),
+                    SizedBox(height: 24),
+                    // Product Section
+                    _buildSectionHeader('Product', 'Completed'),
+                    SizedBox(height: 12),
+                    ...productOrders.map((order) => _buildHistoryOrderItem(order)),
+                    SizedBox(height: 24),
+                    // Drink Section
+                    _buildSectionHeader('Drink', 'Canceled'),
+                    SizedBox(height: 12),
+                    ...drinkOrders.map((order) => _buildHistoryOrderItem(order)),
+                    SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavBar(currentIndex: 2),
     );

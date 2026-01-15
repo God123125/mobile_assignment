@@ -6,8 +6,13 @@ class SearchBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200, width: 1),
+      ),
       child: TextField(
         readOnly: true,
         onTap: () {
@@ -16,28 +21,37 @@ class SearchBox extends StatelessWidget {
             MaterialPageRoute(builder: (_) => const SearchScreen()),
           );
         },
-        style: const TextStyle(fontSize: 12),
+        style: TextStyle(
+          fontSize: 14,
+          color: Colors.grey.shade800,
+          fontWeight: FontWeight.normal,
+        ),
         decoration: InputDecoration(
-          filled: true,
-          fillColor: Colors.grey.shade100,
+          filled: false,
           hintText: "Search dishes, restaurants",
           hintStyle: TextStyle(
-            color: Colors.grey.shade600,
-            fontSize: 12,
+            color: Colors.grey.shade500,
+            fontSize: 14,
+            fontWeight: FontWeight.normal,
           ),
-          prefixIcon: const Icon(Icons.search, size: 20, color: Colors.grey),
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: 20,
-            horizontal: 10,
+          prefixIcon: Icon(
+            Icons.search,
+            size: 22,
+            color: Colors.grey.shade600,
+          ),
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 14,
+            horizontal: 16,
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none, 
+            borderSide: BorderSide.none,
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
+          border: InputBorder.none,
         ),
       ),
     );
