@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:khmer_cultur_app/screens/auth/login_screen.dart';
+import 'package:flutter/services.dart';
+import 'package:khmer_cultur_app/models/auth/register_model.dart';
+import 'package:khmer_cultur_app/screens/auth/verification_screen.dart';
+import 'package:khmer_cultur_app/services/auth_service.dart';
 import 'package:khmer_cultur_app/widgets/bg_login_widget.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -11,6 +14,75 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   bool obscureText = true;
+  bool isLoading = false;
+
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+
+  final AuthService userService = AuthService();
+
+  @override
+  void dispose() {
+    usernameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  void _register() async {
+    if (isLoading) return;
+
+    final username = usernameController.text.trim();
+    final email = emailController.text.trim();
+    final phone = phoneController.text.trim();
+    final password = passwordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
+
+    if (username.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty || phone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill all fields'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Passwords do not match'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+    setState(() => isLoading = true);
+    final user = RegisterModel(
+      name: username,
+      email: email,
+      password: password,
+      phone: phone,
+    );
+
+    final success = await userService.registerUser(user);
+
+    setState(() => isLoading = false);
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Already Sign up, Please check your email'), backgroundColor: Colors.orange),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => VerificationScreen(email: email),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Registration failed. Please try again'), backgroundColor: Colors.red),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +149,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         Text("Username", style: TextStyle(fontSize: 12)),
                         SizedBox(height: 4),
                         TextField(
+                          controller: usernameController,
                           decoration: InputDecoration(
                             hintText: 'Enter Username',
                             hintStyle: TextStyle(color: Colors.grey, fontSize: 12),
@@ -93,6 +166,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         Text("Email", style: TextStyle(fontSize: 12)),
                         SizedBox(height: 4),
                         TextField(
+                          controller: emailController,
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             hintText: 'example@gmail.com',
@@ -107,9 +181,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                         ),
                         SizedBox(height: 14),
+                        Text("Phone", style: TextStyle(fontSize: 12)),
+                        SizedBox(height: 4),
+                        TextField(
+                          controller: phoneController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly, 
+                            LengthLimitingTextInputFormatter(10), 
+                          ],
+                          decoration: InputDecoration(
+                            hintText: '0123...',
+                            hintStyle: TextStyle(color: Colors.grey, fontSize: 12),
+                            filled: true,
+                            fillColor: Color(0xFFF0F5FA),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                          ),
+                        ),
+                        SizedBox(height: 14),
                         Text("Password", style: TextStyle(fontSize: 12)),
                         SizedBox(height: 4),
                         TextField(
+                          controller: passwordController,
                           obscureText: obscureText,
                           decoration: InputDecoration(
                             hintText: 'Enter password',
@@ -135,6 +232,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         Text("Re-Type Password", style: TextStyle(fontSize: 12)),
                         SizedBox(height: 4),
                         TextField(
+                          controller: confirmPasswordController,
                           obscureText: obscureText,
                           decoration: InputDecoration(
                             hintText: 'Confirm password',
@@ -161,29 +259,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           width: double.infinity,
                           height: 50,
                           child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => LoginScreen()),
-                              );
-                            },
+                            onPressed: isLoading ? null : _register,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: Text(
-                              'SIGN UP',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
+                            child: isLoading
+                                ? SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.5,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : Text(
+                                    'SIGN UP',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                           ),
                         ),
-                        SizedBox(height: 20), // Safe bottom padding
+                        SizedBox(height: 20), 
                       ],
                     ),
                   ),
