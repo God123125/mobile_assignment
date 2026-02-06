@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:khmer_cultur_app/screens/chat_detail_screen.dart';
 import 'package:khmer_cultur_app/widgets/bottom_nav.dart';
 
 class MessageScreen extends StatefulWidget {
@@ -9,6 +10,9 @@ class MessageScreen extends StatefulWidget {
 }
 
 class _MessageScreenState extends State<MessageScreen> {
+  // Set this to true if current user is admin, false if customer
+  final bool _isCurrentUserAdmin = false;
+
   final List<Map<String, dynamic>> _messages = [
     {
       'avatar': 'assets/images/welcom1.png',
@@ -17,6 +21,7 @@ class _MessageScreenState extends State<MessageScreen> {
       'time': '20 min ago',
       'unreadCount': 2,
       'isRead': false,
+      'isAdmin': true, // This conversation is with admin
     },
     {
       'avatar': 'assets/images/welcom2.png',
@@ -25,6 +30,7 @@ class _MessageScreenState extends State<MessageScreen> {
       'time': '1 hour ago',
       'unreadCount': 0,
       'isRead': true,
+      'isAdmin': true,
     },
     {
       'avatar': 'assets/images/welcom3.png',
@@ -33,6 +39,7 @@ class _MessageScreenState extends State<MessageScreen> {
       'time': '2 hours ago',
       'unreadCount': 1,
       'isRead': false,
+      'isAdmin': true,
     },
     {
       'avatar': 'assets/images/welcom1.png',
@@ -41,6 +48,7 @@ class _MessageScreenState extends State<MessageScreen> {
       'time': '3 hours ago',
       'unreadCount': 0,
       'isRead': true,
+      'isAdmin': true,
     },
   ];
 
@@ -111,7 +119,17 @@ class _MessageScreenState extends State<MessageScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
         onTap: () {
-          // Handle message tap - navigate to chat detail
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatDetailScreen(
+                userName: message['name'],
+                userAvatar: message['avatar'],
+                isAdmin: _isCurrentUserAdmin,
+                isConversationWithAdmin: message['isAdmin'] ?? false,
+              ),
+            ),
+          );
         },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,

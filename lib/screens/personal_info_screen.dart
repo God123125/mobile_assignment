@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:khmer_cultur_app/screens/edit_profile_screen.dart';
+import 'package:khmer_cultur_app/screens/reset_password_screen.dart';
 import 'package:khmer_cultur_app/widgets/bottom_nav.dart';
 
 class PersonalInfoScreen extends StatelessWidget {
@@ -133,7 +134,73 @@ class PersonalInfoScreen extends StatelessWidget {
                               iconColor: Colors.lightBlue,
                               label: "PHONE NUMBER",
                               value: "0886545434",
-                              isLast: true,
+                              isLast: false,
+                            ),
+                            // Reset Password Row
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const ResetPasswordScreen(),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    top: BorderSide(color: Colors.grey.shade200, width: 1),
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade200,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.lock_outline,
+                                        color: Colors.red.shade400,
+                                        size: 20,
+                                      ),
+                                    ),
+                                    SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "RESET PASSWORD",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color(0xFF2C2C2C),
+                                              letterSpacing: 0.5,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Text(
+                                            "Change your password",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.blue,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.chevron_right,
+                                      color: Colors.grey.shade400,
+                                      size: 24,
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ],
                         ),

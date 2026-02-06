@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:khmer_cultur_app/screens/address_screen.dart';
-import 'package:khmer_cultur_app/screens/personal_info_screen.dart';
 import 'package:khmer_cultur_app/screens/card_profile_screen.dart';
 import 'package:khmer_cultur_app/screens/favorite_screen.dart';
 import 'package:khmer_cultur_app/screens/notification_screen.dart';
+import 'package:khmer_cultur_app/screens/personal_info_screen.dart';
+import 'package:khmer_cultur_app/screens/language_screen.dart';
+import 'package:khmer_cultur_app/screens/faqs_screen.dart';
 import 'package:khmer_cultur_app/widgets/bottom_nav.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -143,7 +145,18 @@ class ProfileScreen extends StatelessWidget {
                               );
                             },
                           ),
-                          _NavigationItem(icon: Icons.language, title: "Language", onTap: () {}),
+                          _NavigationItem(
+                            icon: Icons.language,
+                            title: "Language",
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const LanguageScreen(),
+                                ),
+                              );
+                            },
+                          ),
                         ],
                       ),
 
@@ -153,7 +166,18 @@ class ProfileScreen extends StatelessWidget {
                       _buildNavigationCard(
                         context,
                         items: [
-                          _NavigationItem(icon: Icons.help_outline, title: "FAQs", onTap: () {}),
+                          _NavigationItem(
+                            icon: Icons.help_outline,
+                            title: "FAQs",
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const FAQsScreen(),
+                                ),
+                              );
+                            },
+                          ),
                         ],
                       ),
 

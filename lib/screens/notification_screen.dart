@@ -68,9 +68,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             _buildTabs(),
             const SizedBox(height: 8),
             Expanded(
-              child: _selectedTabIndex == 0
-                  ? _buildNotificationsList()
-                  : _buildMessagesList(),
+              child: _selectedTabIndex == 0 ? _buildNotificationsList() : _buildMessagesList(),
             ),
           ],
         ),
@@ -97,7 +95,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
           Expanded(
             child: Text(
               _selectedTabIndex == 0 ? 'Notifications' : 'Messages',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF2C2C2C)),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF2C2C2C),
+              ),
             ),
           ),
         ],
@@ -182,10 +184,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Widget _buildMessagesList() {
     return _messages.isEmpty
         ? Center(
-            child: Text(
-              "No messages",
-              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
-            ),
+            child: Text("No messages", style: TextStyle(fontSize: 16, color: Colors.grey.shade600)),
           )
         : ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 16),
