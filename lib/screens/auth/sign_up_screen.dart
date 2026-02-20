@@ -149,6 +149,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         Text("Username", style: TextStyle(fontSize: 12)),
                         SizedBox(height: 4),
                         TextField(
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
                           controller: usernameController,
                           decoration: InputDecoration(
                             hintText: 'Enter Username',
@@ -166,6 +169,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         Text("Email", style: TextStyle(fontSize: 12)),
                         SizedBox(height: 4),
                         TextField(
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
                           controller: emailController,
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
@@ -184,6 +190,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         Text("Phone", style: TextStyle(fontSize: 12)),
                         SizedBox(height: 4),
                         TextField(
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
                           controller: phoneController,
                           keyboardType: TextInputType.number,
                           inputFormatters: [
@@ -206,6 +215,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         Text("Password", style: TextStyle(fontSize: 12)),
                         SizedBox(height: 4),
                         TextField(
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
                           controller: passwordController,
                           obscureText: obscureText,
                           decoration: InputDecoration(
@@ -232,6 +244,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         Text("Re-Type Password", style: TextStyle(fontSize: 12)),
                         SizedBox(height: 4),
                         TextField(
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
                           controller: confirmPasswordController,
                           obscureText: obscureText,
                           decoration: InputDecoration(

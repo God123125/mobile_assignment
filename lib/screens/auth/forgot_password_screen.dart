@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:khmer_cultur_app/screens/auth/verification_screen.dart';
 import 'package:khmer_cultur_app/widgets/bg_login_widget.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
@@ -70,6 +69,9 @@ class ForgotPasswordScreen extends StatelessWidget {
                       Text("Email", style: TextStyle(fontSize: 12)),
                       SizedBox(height: 8),
                       TextField(
+                        style: TextStyle(
+                            fontSize: 12,
+                          ),
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
                           hintText: 'example@gmail.com',
@@ -92,7 +94,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                             // Navigator.push(
                             //   context,
                             //   MaterialPageRoute(
-                            //     builder: (_) => VerificationScreen(),
+                            //     builder: (_) => UpdatePassword(),
                             //   ),
                             // );
                           },
