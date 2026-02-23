@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:khmer_cultur_app/models/auth/login_request_model.dart';
 import 'package:khmer_cultur_app/screens/auth/forgot_password_screen.dart';
 import 'package:khmer_cultur_app/screens/auth/sign_up_screen.dart';
 import 'package:khmer_cultur_app/screens/home_screen.dart';
+import 'package:khmer_cultur_app/services/auth_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:khmer_cultur_app/widgets/bg_login_widget.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,6 +17,106 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool obscureText = true;
   bool rememberMe = false;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRememberMe();
+  }
+
+  Future<void> _loadRememberMe() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      rememberMe = prefs.getBool('rememberMe') ?? false;
+      if (rememberMe) {
+        _emailController.text = prefs.getString('savedEmail') ?? '';
+        _passwordController.text = prefs.getString('savedPassword') ?? '';
+      }
+    });
+  }
+
+  Future<void> _login() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final request = LoginRequestModel(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      final result = await AuthService().loginUser(request);
+
+      final prefs = await SharedPreferences.getInstance();
+
+      if (result != null) {
+        // Save email if Remember Me is checked
+        if (rememberMe) {
+          await prefs.setBool('rememberMe', true);
+          await prefs.setString('savedEmail', _emailController.text.trim());
+          await prefs.setString(
+            'savedPassword',
+            _passwordController.text.trim(),
+          );
+        } else {
+          await prefs.setBool('rememberMe', false);
+          await prefs.remove('savedEmail');
+          await prefs.remove('savedPassword');
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Login successful',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        await Future.delayed(const Duration(milliseconds: 800));
+
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => HomeScreen()),
+          (route) => false,
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Invalid email or password',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Cannot connect to server',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Expanded(
                 child: Container(
                   width: double.infinity,
-                  padding: EdgeInsets.only(top: 18,right: 18,left: 18),
+                  padding: EdgeInsets.only(top: 18, right: 18, left: 18),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
@@ -64,6 +167,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         Text("Email", style: TextStyle(fontSize: 12)),
                         SizedBox(height: 4),
                         TextField(
+                          style: TextStyle(fontSize: 12),
+                          controller: _emailController,
                           decoration: InputDecoration(
                             hintText: 'example@gmail.com',
                             hintStyle: TextStyle(
@@ -86,6 +191,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         Text("Password", style: TextStyle(fontSize: 12)),
                         SizedBox(height: 4),
                         TextField(
+                          style: TextStyle(fontSize: 12),
+                          controller: _passwordController,
                           obscureText: obscureText,
                           decoration: InputDecoration(
                             hintText: 'Enter password',
@@ -105,7 +212,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             suffixIcon: IconButton(
                               icon: Icon(
-                                obscureText? Icons.visibility_off: Icons.visibility,
+                                obscureText
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
                                 color: Colors.grey,
                               ),
                               onPressed: () {
@@ -159,7 +268,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => ForgotPasswordScreen(),
+                                    builder: (context) =>
+                                        ForgotPasswordScreen(),
                                   ),
                                 );
                               },
@@ -173,35 +283,29 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 40), // reduced from 70
-                    
+                        SizedBox(height: 40),
+
                         SizedBox(
                           width: double.infinity,
                           height: 50,
                           child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => HomeScreen(),
-                                ),
-                                (route) => false,
-                              );
-                            },
+                            onPressed: _isLoading ? null : _login,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: Text(
-                              'LOG IN',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
+                            child: _isLoading
+                                ? CircularProgressIndicator(color: Colors.white)
+                                : Text(
+                                    'LOG IN',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                           ),
                         ),
                         SizedBox(height: 16),
@@ -232,14 +336,19 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                         SizedBox(height: 16),
-                        Center(child: Text('Or', style: TextStyle(fontSize: 12))),
+                        Center(
+                          child: Text('Or', style: TextStyle(fontSize: 12)),
+                        ),
                         SizedBox(height: 16),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             socialButton(Icons.facebook, Colors.blue[800]!),
                             SizedBox(width: 24),
-                            socialButton(Icons.alternate_email, Colors.lightBlue),
+                            socialButton(
+                              Icons.alternate_email,
+                              Colors.lightBlue,
+                            ),
                             SizedBox(width: 24),
                             socialButton(Icons.apple, Colors.black),
                           ],

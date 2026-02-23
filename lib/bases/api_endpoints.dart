@@ -9,4 +9,8 @@ class ApiEndpoints {
 
   //get
   static String get getPersonalInfo => '$baseUrl/mobile-users';
+  static String get getCagories => '$baseUrl/categories';
+
+  //update
+  static String updatePassword() => '$baseUrl/mobile-users/update-account';
 }

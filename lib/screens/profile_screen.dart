@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:khmer_cultur_app/bases/user_session.dart';
 import 'package:khmer_cultur_app/screens/address_screen.dart';
+import 'package:khmer_cultur_app/screens/auth/login_screen.dart';
 import 'package:khmer_cultur_app/screens/card_profile_screen.dart';
 import 'package:khmer_cultur_app/screens/favorite_screen.dart';
 import 'package:khmer_cultur_app/screens/notification_screen.dart';
@@ -67,7 +69,10 @@ class ProfileScreen extends StatelessWidget {
                       SizedBox(height: 4),
                       Text(
                         "kimmina@gmail.com",
-                        style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade600,
+                        ),
                       ),
                     ],
                   ),
@@ -92,7 +97,10 @@ class ProfileScreen extends StatelessWidget {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const PersonalInfoScreen()),
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const PersonalInfoScreen(),
+                                ),
                               );
                             },
                           ),
@@ -102,7 +110,9 @@ class ProfileScreen extends StatelessWidget {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const AddressScreen()),
+                                MaterialPageRoute(
+                                  builder: (context) => const AddressScreen(),
+                                ),
                               );
                             },
                           ),
@@ -121,7 +131,10 @@ class ProfileScreen extends StatelessWidget {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const CartProfileScreen()),
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const CartProfileScreen(),
+                                ),
                               );
                             },
                           ),
@@ -131,7 +144,9 @@ class ProfileScreen extends StatelessWidget {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const FavoriteScreen()),
+                                MaterialPageRoute(
+                                  builder: (context) => const FavoriteScreen(),
+                                ),
                               );
                             },
                           ),
@@ -141,7 +156,10 @@ class ProfileScreen extends StatelessWidget {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const NotificationScreen()),
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const NotificationScreen(),
+                                ),
                               );
                             },
                           ),
@@ -180,6 +198,37 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         ],
                       ),
+                      SizedBox(height: 10),
+                      SizedBox(
+                        width: double.infinity, 
+                        height: 50, 
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: () async {
+                            await UserSession.clear();
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const LoginScreen(),
+                              ),
+                              (route) => false,
+                            );
+                          },
+                          child: const Text(
+                            'LOGOUT',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ),
 
                       SizedBox(height: 20),
                     ],
@@ -194,7 +243,10 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNavigationCard(BuildContext context, {required List<_NavigationItem> items}) {
+  Widget _buildNavigationCard(
+    BuildContext context, {
+    required List<_NavigationItem> items,
+  }) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
@@ -210,7 +262,12 @@ class ProfileScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 border: isLast
                     ? null
-                    : Border(bottom: BorderSide(color: Colors.grey.shade200, width: 1)),
+                    : Border(
+                        bottom: BorderSide(
+                          color: Colors.grey.shade200,
+                          width: 1,
+                        ),
+                      ),
               ),
               child: Row(
                 children: [
@@ -226,7 +283,11 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Icon(Icons.chevron_right, color: Colors.grey.shade400, size: 24),
+                  Icon(
+                    Icons.chevron_right,
+                    color: Colors.grey.shade400,
+                    size: 24,
+                  ),
                 ],
               ),
             ),
@@ -242,5 +303,9 @@ class _NavigationItem {
   final String title;
   final VoidCallback onTap;
 
-  _NavigationItem({required this.icon, required this.title, required this.onTap});
+  _NavigationItem({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+  });
 }

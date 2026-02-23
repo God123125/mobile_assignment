@@ -228,13 +228,13 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text("Code resent to ${widget.email}"),backgroundColor: Colors.green,),
                                 );
-                                startResendTimer(); // restart timer
+                                startResendTimer();
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text("Failed to resend code"),backgroundColor: Colors.red,),
                                 );
                               }
-                              } : null, // disable button until timer ends
+                              } : null, 
                               child: Text(
                                 _canResend ? "Resend Code" : "Resend in $_resendSeconds sec",
                                 style: TextStyle(
