@@ -68,7 +68,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 children: [_buildTab('Ongoing', 0), SizedBox(width: 32), _buildTab('History', 1)],
               ),
             ),
-            SizedBox(height: 16),
+            SizedBox(height: 8),
             // Content
             Expanded(
               child: SingleChildScrollView(
@@ -78,19 +78,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   children: [
                     // Food Section
                     _buildSectionHeader('Food', 'Completed'),
-                    SizedBox(height: 12),
                     ...foodOrders.map((order) => _buildHistoryOrderItem(order)),
-                    SizedBox(height: 24),
                     // Product Section
                     _buildSectionHeader('Product', 'Completed'),
-                    SizedBox(height: 12),
                     ...productOrders.map((order) => _buildHistoryOrderItem(order)),
-                    SizedBox(height: 24),
                     // Drink Section
                     _buildSectionHeader('Drink', 'Canceled'),
-                    SizedBox(height: 12),
                     ...drinkOrders.map((order) => _buildHistoryOrderItem(order)),
-                    SizedBox(height: 24),
                   ],
                 ),
               ),

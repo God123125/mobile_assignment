@@ -5,22 +5,35 @@ import 'package:khmer_cultur_app/bases/user_session.dart';
 import 'package:http/http.dart' as http;
 
 class BaseService {
+
   Future<Map<String, String>> get headers async {
-    final token = await UserSession.getToken();
+    final token = await UserSession.getToken(); // get token from storage
+
     return {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
+      if (token != null) 'Authorization': 'Bearer $token', // attach token
     };
   }
 
   Future<http.Response> post(String url, {Map<String, dynamic>? body}) async {
+    final response = await http.post(
+      Uri.parse(url),
+      headers: await headers,
+      body: body != null ? jsonEncode(body) : null,
+    );
+
+    if (response.statusCode == 401) {
+      // Unauthorized → token missing/expired
+      SessionHelper.handleSessionExpired();
+    }
+
+    return response;
+  }
+
+  Future<http.Response> get(String url) async {
     try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: await headers,
-        body: body != null ? jsonEncode(body) : null,
-      );
+      final response = await http.get(Uri.parse(url), headers: await headers);
 
       if (response.statusCode == 401) {
         SessionHelper.handleSessionExpired(); // token expired
@@ -32,15 +45,16 @@ class BaseService {
     }
   }
 
-  Future<http.Response> get(String url) async {
+  Future<http.Response> patch(String url, {Map<String, dynamic>? body}) async {
     try {
-      final response = await http.get(
+      final response = await http.patch(
         Uri.parse(url),
         headers: await headers,
+        body: body != null ? jsonEncode(body) : null,
       );
 
       if (response.statusCode == 401) {
-        SessionHelper.handleSessionExpired(); // token expired
+        SessionHelper.handleSessionExpired(); 
       }
 
       return response;
@@ -49,3 +63,30 @@ class BaseService {
     }
   }
 }
+  // Future<Map<String, String>> get headers async {
+  //   final token = await UserSession.getToken();
+
+  //   return {
+  //     'Content-Type': 'application/json',
+  //     'Accept': 'application/json',
+  //     if (token != null) 'Authorization': 'Bearer $token',
+  //   };
+  // }
+
+  // Future<http.Response> post(String url, {Map<String, dynamic>? body}) async {
+  //   try {
+  //     final response = await http.post(
+  //       Uri.parse(url),
+  //       headers: await headers,
+  //       body: body != null ? jsonEncode(body) : null,
+  //     );
+
+  //     if (response.statusCode == 401) {
+  //       SessionHelper.handleSessionExpired(); // token expired
+  //     }
+
+  //     return response;
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  // }

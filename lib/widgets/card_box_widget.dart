@@ -11,7 +11,7 @@ class CardBox extends StatelessWidget {
         children: [
           CircleAvatar(
             backgroundColor: Colors.black,
-            child: Icon(Icons.shopping_bag_outlined, color: Colors.white),
+            child: Icon(Icons.notifications, color: Colors.white),
           ),
           Positioned(
             right: 0,

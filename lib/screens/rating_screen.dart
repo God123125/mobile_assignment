@@ -8,7 +8,7 @@ class RatingScreen extends StatefulWidget {
 }
 
 class _RatingScreenState extends State<RatingScreen> {
-  int _rating = 4; // Default 4 stars
+  int _rating = 5; // Default 4 stars
   final TextEditingController _feedbackController = TextEditingController(
     text: 'VERY GOOD DELICIOUS.',
   );

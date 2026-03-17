@@ -1,167 +1,254 @@
+
 import 'package:flutter/material.dart';
 
-class CardGrid extends StatefulWidget {
+class CardGrid extends StatelessWidget {
+  // ← change to Stateless
   final String title;
-  final double price;
   final String imgUrl;
   final bool isFav;
   final int sold;
   final int liked;
   final int limitPurchase;
   final double originalPrice;
-  final Function() onTabCard;
+  final double? price;
+  final double? priceAfterDis;
+  final double? dis;
+  final int quantity; // ← renamed
+  final bool showQtySelector;
+  final VoidCallback onAdd;
+  final VoidCallback onRemove;
+  final VoidCallback onCardTap;
 
   const CardGrid({
     super.key,
     required this.title,
-    required this.price,
     required this.imgUrl,
     required this.isFav,
     required this.sold,
     required this.liked,
     required this.limitPurchase,
-    required this.onTabCard,
     required this.originalPrice,
+    this.price,
+    this.priceAfterDis,
+    this.dis,
+    this.quantity = 0,
+    this.showQtySelector = true,
+    required this.onAdd,
+    required this.onRemove,
+    required this.onCardTap,
   });
 
   @override
-  State<CardGrid> createState() => _CardGridState();
-}
-
-class _CardGridState extends State<CardGrid> {
-  late bool fav;
-
-  @override
-  void initState() {
-    super.initState();
-    fav = widget.isFav;
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: Color.fromARGB(22, 0, 0, 0),
-            spreadRadius: 2,
-            blurRadius: 6,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(18),
-                      image: DecorationImage(
-                        image: AssetImage(widget.imgUrl),
-                        fit: BoxFit.cover,
+    final bool hasDiscount = (dis ?? 0) > 0;
+
+    return GestureDetector(
+      onTap: onCardTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: const Color.fromARGB(22, 0, 0, 0),
+              spreadRadius: 2,
+              blurRadius: 6,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Stack(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(18),
+                        image: DecorationImage(
+                          image: NetworkImage(imgUrl),
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Positioned(
-                  top: 18,
-                  right: 18,
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        fav = !fav;
-                      });
-                    },
+                  Positioned(
+                    top: 18,
+                    right: 18,
                     child: Icon(
-                      fav ? Icons.favorite : Icons.favorite_border,
-                      color: fav ? Colors.red : Colors.grey,
+                      isFav ? Icons.favorite : Icons.favorite_border,
+                      color: isFav ? Colors.red : Colors.grey,
                       size: 28,
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 14, right: 14, bottom: 14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max, 
-              children: [
-                Text(
-                  widget.title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w600,
+            Padding(
+              padding: const EdgeInsets.only(left: 14, right: 14, bottom: 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  "${widget.sold}+ sold • ${widget.liked} liked",
-                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                ),
-                Text(
-                  "• Limit purchase ${widget.limitPurchase}", 
-                  style: TextStyle(fontSize: 12, color: Colors.blue[600]),
-                ),
-                SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          "\$${widget.price.toStringAsFixed(2)}",
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                  const SizedBox(height: 4),
+                  Text(
+                    "$sold+ sold • $liked liked",
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "• Limit purchase $limitPurchase",
+                        style: TextStyle(fontSize: 12, color: Colors.blue[600]),
+                      ),
+                      if (hasDiscount)
+                        Container(
+                          padding: const EdgeInsets.all(3),
+                          decoration: BoxDecoration(
+                            color: Colors.red[50],
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        ),
-                        SizedBox(width: 8),
-                        if (widget.originalPrice > widget.price)
-                          Text(
-                            "\$${widget.originalPrice.toStringAsFixed(2)}",
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                              decoration: TextDecoration.lineThrough,
-                              decorationThickness: 2,
+                          child: Text(
+                            "-${dis!.toStringAsFixed(0)}%",
+                            style: TextStyle(
+                              color: Colors.red[700],
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                      ],
-                    ),
-                    Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(15),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Price + Quantity control
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (hasDiscount) ...[
+                            Text(
+                              "\$${priceAfterDis!.toStringAsFixed(2)}",
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                            SizedBox(width: 2),
+                            Text(
+                              "\$${price!.toStringAsFixed(2)}",
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                decoration: TextDecoration.lineThrough,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ] else
+                            Text(
+                              "\$${price!.toStringAsFixed(2)}",
+                              style: const TextStyle(
+                                color: Colors.black87,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                        ],
                       ),
-                      child: GestureDetector(
-                        onTap: widget.onTabCard,
-                        child: Icon(Icons.add, color: Colors.white, size: 20),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+
+                      if (quantity == 0)
+                        // Show only + button when quantity is 0
+                        _buildAddButton()
+                      else
+                        // Show full - qty + controls when quantity > 0
+                        _buildQuantitySelector(quantity),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAddButton() {
+    return GestureDetector(
+      onTap: onAdd,
+      child: Container(
+        width: 35,
+        height: 35,
+        decoration: BoxDecoration(
+          color: Colors.blue,
+          borderRadius: BorderRadius.circular(18),
+        ),
+        alignment: Alignment.center,
+        child: const Icon(Icons.add, color: Colors.white, size: 22),
+      ),
+    );
+  }
+
+  Widget _buildQuantitySelector(int qty) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GestureDetector(
+          onTap: onRemove,
+          child: Container(
+            width: 35,
+            height: 35,
+            decoration: BoxDecoration(
+              color: Colors.blue[800],
+              borderRadius: BorderRadius.circular(18),
+            ),
+            alignment: Alignment.center,
+            child: const Icon(Icons.remove, color: Colors.white, size: 22),
+          ),
+        ),
+        Container(
+          width: 30, // fixed width for number
+          alignment: Alignment.center,
+          child: Text(
+            "$qty",
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Colors.black87,
             ),
           ),
-        ],
-      ),
+        ),
+        GestureDetector(
+          onTap: onAdd,
+          child: Container(
+            width: 35,
+            height: 35,
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(18),
+            ),
+            alignment: Alignment.center,
+            child: const Icon(Icons.add, color: Colors.white, size: 22),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -8,27 +8,47 @@ class UserSession {
 
   /// Save token and user profile securely
   static Future<void> save(String token, Map<String, dynamic> user) async {
-  _currentUser = UserModel.fromJson(user);
-  await _storage.write(key: "token", value: token);
-  await _storage.write(key: "user", value: jsonEncode(user));
-  //Save User Profile and Tocket to Memory
-}
+    _currentUser = UserModel.fromJson(user);
+    await _storage.write(key: "token", value: token);
+    await _storage.write(key: "user", value: jsonEncode(user));
+    //Save User Profile and Tocket to Memory
+  }
+
   /// Get stored token
   static Future<String?> getToken() async {
-  return await _storage.read(key: "token");
-  //Return Token Data from memory
-}
+    return await _storage.read(key: "token");
+    //Return Token Data from memory
+  }
+
   static Future<UserModel?> getCurrentUser() async {
-  if (_currentUser != null) return _currentUser;
-  final userStr = await _storage.read(key: "user");
-  if (userStr == null) return null;
-  _currentUser = UserModel.fromJson(jsonDecode(userStr));
-  return _currentUser;
-  //Read user profile from memory and convert to object
-}
-/// Get fields directly from cached user
+    if (_currentUser != null) return _currentUser;
+    final userStr = await _storage.read(key: "user");
+    if (userStr == null) return null;
+    _currentUser = UserModel.fromJson(jsonDecode(userStr));
+    return _currentUser;
+    //Read user profile from memory and convert to object
+  }
+
+  /// Get fields directly from cached user
   static String? getEmail() => _currentUser?.email;
   static String? getName() => _currentUser?.name;
+
+  // Get user latitude
+  static double? getLatitude() {
+    if (_currentUser != null && _currentUser!.address.isNotEmpty) {
+      return _currentUser!.address.first.lat;
+    }
+    return null;
+  }
+
+  /// Get user longitude
+  static double? getLongitude() {
+    if (_currentUser != null && _currentUser!.address.isNotEmpty) {
+      return _currentUser!.address.first.lng;
+    }
+    return null;
+  }
+
   /// Clear all
   static Future<void> clear() async {
     _currentUser = null;

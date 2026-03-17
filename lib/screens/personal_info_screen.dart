@@ -1,10 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:khmer_cultur_app/bases/user_session.dart';
+import 'package:khmer_cultur_app/models/auth/user_model.dart';
 import 'package:khmer_cultur_app/screens/edit_profile_screen.dart';
 import 'package:khmer_cultur_app/screens/reset_password_screen.dart';
 import 'package:khmer_cultur_app/widgets/bottom_nav.dart';
 
-class PersonalInfoScreen extends StatelessWidget {
+class PersonalInfoScreen extends StatefulWidget {
   const PersonalInfoScreen({super.key});
+
+  @override
+  State<PersonalInfoScreen> createState() => _PersonalInfoScreenState();
+}
+
+class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
+  UserModel? user;
+  
+
+  @override
+  void initState() {
+    super.initState();
+    loadUser();
+  }
+
+  Future<void> loadUser() async {
+    final currentUser = await UserSession.getCurrentUser();
+    setState(() {
+      user = currentUser;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +51,11 @@ class PersonalInfoScreen extends StatelessWidget {
                         color: Colors.grey.shade200,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(Icons.arrow_back, color: Color(0xFF2C2C2C), size: 20),
+                      child: Icon(
+                        Icons.arrow_back,
+                        color: Color(0xFF2C2C2C),
+                        size: 20,
+                      ),
                     ),
                     onPressed: () {
                       Navigator.pop(context);
@@ -48,7 +75,9 @@ class PersonalInfoScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+                        MaterialPageRoute(
+                          builder: (context) => const EditProfileScreen(),
+                        ),
                       );
                     },
                     child: Text(
@@ -73,14 +102,19 @@ class PersonalInfoScreen extends StatelessWidget {
                   CircleAvatar(
                     radius: 40,
                     backgroundColor: Colors.grey.shade300,
-                    backgroundImage: AssetImage('assets/images/welcom1.png'),
+                    backgroundImage: user?.profile.isNotEmpty == true
+                        ? NetworkImage(user!.profile)
+                        : null,
+                    child: user?.profile.isEmpty == true
+                        ? const Icon(Icons.person, size: 40)
+                        : null,
                   ),
                   SizedBox(width: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Kim Mina",
+                        user?.name ?? "",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -89,8 +123,11 @@ class PersonalInfoScreen extends StatelessWidget {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        "kimmina@gmail.com",
-                        style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                        user?.email ?? "",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade600,
+                        ),
                       ),
                     ],
                   ),
@@ -117,7 +154,7 @@ class PersonalInfoScreen extends StatelessWidget {
                               icon: Icons.person_outline,
                               iconColor: Colors.orange,
                               label: "FULL NAME",
-                              value: "Kim Mina",
+                              value: user?.name ?? "",
                               isLast: false,
                             ),
                             // Email Row
@@ -125,7 +162,7 @@ class PersonalInfoScreen extends StatelessWidget {
                               icon: Icons.email_outlined,
                               iconColor: Colors.blue,
                               label: "EMAIL",
-                              value: "kimmina@gmail.com",
+                              value: user?.email ?? "",
                               isLast: false,
                             ),
                             // Phone Number Row
@@ -133,7 +170,7 @@ class PersonalInfoScreen extends StatelessWidget {
                               icon: Icons.phone_outlined,
                               iconColor: Colors.lightBlue,
                               label: "PHONE NUMBER",
-                              value: "0886545434",
+                              value: user?.phone ?? "",
                               isLast: false,
                             ),
                             // Reset Password Row
@@ -142,15 +179,22 @@ class PersonalInfoScreen extends StatelessWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const ResetPasswordScreen(),
+                                    builder: (context) =>
+                                        const ResetPasswordScreen(),
                                   ),
                                 );
                               },
                               child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 20,
+                                ),
                                 decoration: BoxDecoration(
                                   border: Border(
-                                    top: BorderSide(color: Colors.grey.shade200, width: 1),
+                                    top: BorderSide(
+                                      color: Colors.grey.shade200,
+                                      width: 1,
+                                    ),
                                   ),
                                 ),
                                 child: Row(
@@ -171,7 +215,8 @@ class PersonalInfoScreen extends StatelessWidget {
                                     SizedBox(width: 16),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             "RESET PASSWORD",
@@ -228,14 +273,19 @@ class PersonalInfoScreen extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       decoration: BoxDecoration(
-        border: isLast ? null : Border(bottom: BorderSide(color: Colors.grey.shade200, width: 1)),
+        border: isLast
+            ? null
+            : Border(bottom: BorderSide(color: Colors.grey.shade200, width: 1)),
       ),
       child: Row(
         children: [
           Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(color: Colors.grey.shade200, shape: BoxShape.circle),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade200,
+              shape: BoxShape.circle,
+            ),
             child: Icon(icon, color: iconColor, size: 20),
           ),
           SizedBox(width: 16),
@@ -253,7 +303,10 @@ class PersonalInfoScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 4),
-                Text(value, style: TextStyle(fontSize: 16, color: Colors.grey.shade600)),
+                Text(
+                  value,
+                  style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                ),
               ],
             ),
           ),

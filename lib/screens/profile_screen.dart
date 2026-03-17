@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:khmer_cultur_app/bases/user_session.dart';
+import 'package:khmer_cultur_app/models/auth/user_model.dart';
 import 'package:khmer_cultur_app/screens/address_screen.dart';
 import 'package:khmer_cultur_app/screens/auth/login_screen.dart';
 import 'package:khmer_cultur_app/screens/card_profile_screen.dart';
@@ -10,8 +11,28 @@ import 'package:khmer_cultur_app/screens/language_screen.dart';
 import 'package:khmer_cultur_app/screens/faqs_screen.dart';
 import 'package:khmer_cultur_app/widgets/bottom_nav.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  UserModel? user;
+
+  @override
+  void initState() {
+    super.initState();
+    loadUser();
+  }
+
+  Future<void> loadUser() async {
+    final currentUser = await UserSession.getCurrentUser();
+    setState(() {
+      user = currentUser;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,41 +65,48 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
 
-            // User Profile Section
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.grey.shade300,
-                    backgroundImage: AssetImage('assets/images/welcom1.png'),
-                  ),
-                  SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Kim Mina",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF2C2C2C),
+              padding: const EdgeInsets.only(bottom: 16,right: 16,left: 16),
+              child: user == null
+                  ? const Center(child: CircularProgressIndicator())
+                  : Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 40,
+                          backgroundColor: Colors.grey.shade300,
+                          backgroundImage: user!.profile.isNotEmpty
+                              ? NetworkImage(user!.profile)
+                              : null,
+                          child: user!.profile.isEmpty
+                              ? const Icon(Icons.person, size: 40)
+                              : null,
                         ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        "kimmina@gmail.com",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade600,
+                        const SizedBox(width: 16),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              user!.name,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF2C2C2C),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              user!.email,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                      ],
+                    ),
             ),
+            const SizedBox(height: 4),
 
             // Navigation Options
             Expanded(
@@ -125,19 +153,19 @@ class ProfileScreen extends StatelessWidget {
                       _buildNavigationCard(
                         context,
                         items: [
-                          _NavigationItem(
-                            icon: Icons.shopping_cart_outlined,
-                            title: "Cart",
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const CartProfileScreen(),
-                                ),
-                              );
-                            },
-                          ),
+                          // _NavigationItem(
+                          //   icon: Icons.shopping_cart_outlined,
+                          //   title: "Cart",
+                          //   onTap: () {
+                          //     Navigator.push(
+                          //       context,
+                          //       MaterialPageRoute(
+                          //         builder: (context) =>
+                          //             const CartProfileScreen(),
+                          //       ),
+                          //     );
+                          //   },
+                          // ),
                           _NavigationItem(
                             icon: Icons.favorite_border,
                             title: "Favourite",
@@ -200,8 +228,8 @@ class ProfileScreen extends StatelessWidget {
                       ),
                       SizedBox(height: 10),
                       SizedBox(
-                        width: double.infinity, 
-                        height: 50, 
+                        width: double.infinity,
+                        height: 50,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
