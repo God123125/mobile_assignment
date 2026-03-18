@@ -1,7 +1,7 @@
 class ApiEndpoints {
   static const String baseUrl = 'https://khmer-culture-cyan.vercel.app/api';
 
-    //Order
+  //Order
   static String addOrder() =>'$baseUrl/orders/checkout';
   static String get getOrder => '$baseUrl/orders';
   static String confirmOrder(String orderId) => '$baseUrl/orders/end-order/$orderId';
@@ -24,5 +24,6 @@ class ApiEndpoints {
 
   //update
   static String updatePassword() => '$baseUrl/mobile-users/update-account';
+  static String updatePasswordByOldPass() => '$baseUrl/mobile-users/update-account';
   static String updatePasswordWithoutLoginModel() => '$baseUrl/mobile-users/verify-code';
 }

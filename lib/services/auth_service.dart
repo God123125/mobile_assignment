@@ -8,6 +8,7 @@ import 'package:khmer_cultur_app/models/auth/login_response_model.dart';
 import 'package:khmer_cultur_app/models/auth/register_model.dart';
 import 'package:khmer_cultur_app/models/auth/request_to_email_model.dart';
 import 'package:khmer_cultur_app/models/auth/resend_verify_model.dart';
+import 'package:khmer_cultur_app/models/auth/update_pass_by_old_pass_model.dart';
 import 'package:khmer_cultur_app/models/auth/update_password_request_model.dart';
 import 'package:khmer_cultur_app/models/auth/update_password_response_model.dart';
 import 'package:khmer_cultur_app/models/auth/update_password_without_login_model.dart';
@@ -15,6 +16,33 @@ import 'package:khmer_cultur_app/models/auth/update_password_without_login_reqpo
 import 'package:khmer_cultur_app/models/auth/verify_model.dart';
 
 class AuthService extends BaseService {
+    /// Update password by old
+  Future<UpdatePasswordWithoutLoginReqponseModel?> updatePasswordByOld(
+    UpdatePassByOldPassModel request) async {
+    try {
+      final url = ApiEndpoints.updatePasswordByOldPass();
+
+      print("URL => $url");
+      print("BODY => ${request.toJson()}");
+
+      final response = await patch(url, body: request.toJson());
+
+      print("STATUS => ${response.statusCode}");
+      print("RESPONSE => ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = UpdatePasswordWithoutLoginReqponseModel.fromJson(
+          jsonDecode(response.body),
+        );
+        return data;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error updating password: $e");
+      return null;
+    }
+  }
   //Request to email
   Future<bool> requestoEmail(RequestToEmailModel requestEmail) async {
     final url = ApiEndpoints.requestToEmail();

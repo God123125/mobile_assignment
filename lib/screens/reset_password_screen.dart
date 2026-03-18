@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:khmer_cultur_app/models/auth/update_pass_by_old_pass_model.dart';
+import 'package:khmer_cultur_app/services/auth_service.dart';
 import 'package:khmer_cultur_app/widgets/bottom_nav.dart';
 import 'package:khmer_cultur_app/bases/user_session.dart';
 
@@ -13,7 +15,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -54,9 +57,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     if (value == null || value.isEmpty) {
       return 'Please enter your old password';
     }
-    if (value.length < 6) {
-      return 'Password must be at least 6 characters';
-    }
+    // if (value.length < 6) {
+    //   return 'Password must be at least 6 characters';
+    // }
     return null;
   }
 
@@ -64,9 +67,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     if (value == null || value.isEmpty) {
       return 'Please enter a new password';
     }
-    if (value.length < 6) {
-      return 'Password must be at least 6 characters';
-    }
+    // if (value.length < 6) {
+    //   return 'Password must be at least 6 characters';
+    // }
     if (value == _oldPasswordController.text) {
       return 'New password must be different from old password';
     }
@@ -83,6 +86,66 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     return null;
   }
 
+  // Future<void> _handleSave() async {
+  //   if (!_formKey.currentState!.validate()) {
+  //     return;
+  //   }
+
+  //   setState(() {
+  //     _isLoading = true;
+  //   });
+
+  //   try {
+  //     // Simulate API call - Replace with actual API call
+  //     await Future.delayed(const Duration(seconds: 1));
+
+  //     // TODO: Replace with actual password reset API call
+  //     // Example:
+  //     // final success = await AuthService.resetPassword(
+  //     //   email: _emailController.text,
+  //     //   oldPassword: _oldPasswordController.text,
+  //     //   newPassword: _newPasswordController.text,
+  //     // );
+
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(
+  //           content: Text('Password updated successfully'),
+  //           backgroundColor: Colors.green,
+  //           duration: Duration(seconds: 2),
+  //         ),
+  //       );
+
+  //       // Clear password fields
+  //       _oldPasswordController.clear();
+  //       _newPasswordController.clear();
+  //       _confirmPasswordController.clear();
+
+  //       // Navigate back after a short delay
+  //       Future.delayed(const Duration(milliseconds: 500), () {
+  //         if (mounted) {
+  //           Navigator.pop(context);
+  //         }
+  //       });
+  //     }
+  //   } catch (e) {
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text('Error: ${e.toString()}'),
+  //           backgroundColor: Colors.red,
+  //           duration: const Duration(seconds: 3),
+  //         ),
+  //       );
+  //     }
+  //   } finally {
+  //     if (mounted) {
+  //       setState(() {
+  //         _isLoading = false;
+  //       });
+  //     }
+  //   }
+  // }
   Future<void> _handleSave() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -93,37 +156,48 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     });
 
     try {
-      // Simulate API call - Replace with actual API call
-      await Future.delayed(const Duration(seconds: 1));
+      // Create request model from input fields
+      final request = UpdatePassByOldPassModel(
+        email: _emailController.text,
+        oldPass: _oldPasswordController.text,
+        newPass: _newPasswordController.text,
+      );
 
-      // TODO: Replace with actual password reset API call
-      // Example:
-      // final success = await AuthService.resetPassword(
-      //   email: _emailController.text,
-      //   oldPassword: _oldPasswordController.text,
-      //   newPassword: _newPasswordController.text,
-      // );
+      // Call AuthService
+      final response = await AuthService().updatePasswordByOld(request);
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Password updated successfully'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
-        );
+      if (response != null) {
+        // Success
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Password updated successfully'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
 
-        // Clear password fields
-        _oldPasswordController.clear();
-        _newPasswordController.clear();
-        _confirmPasswordController.clear();
+          // Clear password fields
+          _oldPasswordController.clear();
+          _newPasswordController.clear();
+          _confirmPasswordController.clear();
 
-        // Navigate back after a short delay
-        Future.delayed(const Duration(milliseconds: 500), () {
-          if (mounted) {
-            Navigator.pop(context);
-          }
-        });
+          // Navigate back after a short delay
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (mounted) Navigator.pop(context);
+          });
+        }
+      } else {
+        // API returned error
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to update password'),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -165,7 +239,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         color: Colors.grey.shade200,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.arrow_back, color: Color(0xFF2C2C2C), size: 20),
+                      child: const Icon(
+                        Icons.arrow_back,
+                        color: Color(0xFF2C2C2C),
+                        size: 20,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -196,7 +274,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         // EMAIL Field
                         _buildLabel('EMAIL'),
                         const SizedBox(height: 8),
-                        _buildInputField(controller: _emailController, enabled: false),
+                        _buildInputField(
+                          controller: _emailController,
+                          enabled: false,
+                        ),
                         const SizedBox(height: 20),
                         // OLD PASSWORD Field
                         _buildLabel('OLD PASSWORD'),
@@ -234,7 +315,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           isVisible: _isConfirmPasswordVisible,
                           onToggleVisibility: () {
                             setState(() {
-                              _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                              _isConfirmPasswordVisible =
+                                  !_isConfirmPasswordVisible;
                             });
                           },
                           validator: _validateConfirmPassword,
@@ -260,7 +342,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                     height: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
                                     ),
                                   )
                                 : const Text(
@@ -317,7 +401,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           color: enabled ? const Color(0xFF2C2C2C) : Colors.grey.shade600,
         ),
         decoration: InputDecoration(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
@@ -343,7 +430,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         validator: validator,
         style: const TextStyle(fontSize: 16, color: Color(0xFF2C2C2C)),
         decoration: InputDecoration(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
@@ -362,5 +452,3 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     );
   }
 }
-
-
