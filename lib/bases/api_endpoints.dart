@@ -12,9 +12,10 @@ class ApiEndpoints {
   static String login() =>'$baseUrl/mobile-users/login';
   static String resendCode() =>'$baseUrl/mobile-users/resend-code';
   static String requestToEmail() =>'$baseUrl/mobile-users/request-to-email';
+  static String updateInfo() =>'$baseUrl/mobile-users/update-account';
 
   //get
-  static String get getPersonalInfo => '$baseUrl/mobile-users';
+  static String get getPersonalInfo => '$baseUrl/mobile-users/personal-info';
   static String get getCagories => '$baseUrl/mobile/categories';
   static String get getStoreCategories => '$baseUrl/store-categories';
   static String get getProducts => '$baseUrl/mobile/products';

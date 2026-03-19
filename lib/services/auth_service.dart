@@ -5,9 +5,11 @@ import 'package:khmer_cultur_app/bases/base_service.dart';
 import 'package:khmer_cultur_app/bases/user_session.dart';
 import 'package:khmer_cultur_app/models/auth/login_request_model.dart';
 import 'package:khmer_cultur_app/models/auth/login_response_model.dart';
+import 'package:khmer_cultur_app/models/auth/personal_infor_model.dart';
 import 'package:khmer_cultur_app/models/auth/register_model.dart';
 import 'package:khmer_cultur_app/models/auth/request_to_email_model.dart';
 import 'package:khmer_cultur_app/models/auth/resend_verify_model.dart';
+import 'package:khmer_cultur_app/models/auth/update_info_model.dart';
 import 'package:khmer_cultur_app/models/auth/update_pass_by_old_pass_model.dart';
 import 'package:khmer_cultur_app/models/auth/update_password_request_model.dart';
 import 'package:khmer_cultur_app/models/auth/update_password_response_model.dart';
@@ -16,9 +18,58 @@ import 'package:khmer_cultur_app/models/auth/update_password_without_login_reqpo
 import 'package:khmer_cultur_app/models/auth/verify_model.dart';
 
 class AuthService extends BaseService {
-    /// Update password by old
+  Future<PersonalInfoResponse?> getPersonalInfo() async {
+    try {
+      final url = ApiEndpoints.getPersonalInfo;
+      final response = await get(url);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return PersonalInfoResponse.fromJson(data);
+      } else {
+        print('Error fetching personal info: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('Exception fetching personal info: $e');
+      return null;
+    }
+  }
+
+  Future<UpdateInfoModelResponse?> updateUserInfo(
+    UpdateInfoModel request,
+  ) async {
+    try {
+      final url = ApiEndpoints.updateInfo();
+
+      final body = jsonEncode(request.toJson());
+
+      print("URL => $url");
+      print("BODY => $body");
+
+      final response = await patch(
+        url,
+        body: request.toJson(), // ✅ CORRECT (Map only)
+      );
+
+      print("STATUS => ${response.statusCode}");
+      print("RESPONSE => ${response.body}");
+
+      if (response.statusCode == 200) {
+        return UpdateInfoModelResponse.fromJson(jsonDecode(response.body));
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error updating user info: $e");
+      return null;
+    }
+  }
+
+  /// Update password by old
   Future<UpdatePasswordWithoutLoginReqponseModel?> updatePasswordByOld(
-    UpdatePassByOldPassModel request) async {
+    UpdatePassByOldPassModel request,
+  ) async {
     try {
       final url = ApiEndpoints.updatePasswordByOldPass();
 
@@ -43,6 +94,7 @@ class AuthService extends BaseService {
       return null;
     }
   }
+
   //Request to email
   Future<bool> requestoEmail(RequestToEmailModel requestEmail) async {
     final url = ApiEndpoints.requestToEmail();
@@ -58,32 +110,34 @@ class AuthService extends BaseService {
   }
 
   /// Update password
-  Future<UpdatePasswordWithoutLoginReqponseModel?> updatePasswordWithoutLoginModel(
-    UpdatePasswordWithoutLoginModel request) async {
-  try {
-    final url = ApiEndpoints.updatePasswordWithoutLoginModel();
+  Future<UpdatePasswordWithoutLoginReqponseModel?>
+  updatePasswordWithoutLoginModel(
+    UpdatePasswordWithoutLoginModel request,
+  ) async {
+    try {
+      final url = ApiEndpoints.updatePasswordWithoutLoginModel();
 
-    print("URL => $url");
-    print("BODY => ${request.toJson()}");
+      print("URL => $url");
+      print("BODY => ${request.toJson()}");
 
-    final response = await patch(url, body: request.toJson());
+      final response = await patch(url, body: request.toJson());
 
-    print("STATUS => ${response.statusCode}");
-    print("RESPONSE => ${response.body}");
+      print("STATUS => ${response.statusCode}");
+      print("RESPONSE => ${response.body}");
 
-    if (response.statusCode == 200) {
-      final data = UpdatePasswordWithoutLoginReqponseModel.fromJson(
-        jsonDecode(response.body),
-      );
-      return data;
-    } else {
+      if (response.statusCode == 200) {
+        final data = UpdatePasswordWithoutLoginReqponseModel.fromJson(
+          jsonDecode(response.body),
+        );
+        return data;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error updating password: $e");
       return null;
     }
-  } catch (e) {
-    print("Error updating password: $e");
-    return null;
   }
-}
 
   //login
   Future<LoginResponseModel?> loginUser(LoginRequestModel login) async {

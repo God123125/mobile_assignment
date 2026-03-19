@@ -3,7 +3,6 @@ import 'package:khmer_cultur_app/bases/user_session.dart';
 import 'package:khmer_cultur_app/models/auth/user_model.dart';
 import 'package:khmer_cultur_app/screens/address_screen.dart';
 import 'package:khmer_cultur_app/screens/auth/login_screen.dart';
-import 'package:khmer_cultur_app/screens/card_profile_screen.dart';
 import 'package:khmer_cultur_app/screens/favorite_screen.dart';
 import 'package:khmer_cultur_app/screens/notification_screen.dart';
 import 'package:khmer_cultur_app/screens/personal_info_screen.dart';

@@ -4,7 +4,6 @@ import 'package:khmer_cultur_app/bases/api_endpoints.dart';
 import 'package:khmer_cultur_app/models/auth/order_model.dart';
 import 'package:khmer_cultur_app/screens/cancel_screen.dart';
 import 'package:khmer_cultur_app/screens/rating_screen.dart';
-import 'package:khmer_cultur_app/screens/restaurant_screen.dart';
 import 'package:khmer_cultur_app/screens/track_order_screen.dart';
 import 'package:khmer_cultur_app/services/order_service.dart';
 import 'package:khmer_cultur_app/widgets/bottom_nav.dart';
@@ -271,7 +270,7 @@ class _OrderScreenState extends State<OrderScreen> {
                     // When calling CancelScreen in OrderScreen:
                     showDialog(
                       context: context,
-                      barrierColor: Colors.black.withOpacity(0.5),
+                      barrierColor: const Color.fromARGB(113, 0, 0, 0),
                       builder: (context) => CancelScreen(
                         onConfirm: () async {
                           // Call cancel API
@@ -410,7 +409,7 @@ class _OrderScreenState extends State<OrderScreen> {
                   onPressed: () {
                     showDialog(
                       context: context,
-                      barrierColor: Colors.black.withOpacity(0.5),
+                      barrierColor: const Color.fromARGB(93, 0, 0, 0),
                       builder: (context) => const RatingScreen(),
                     );
                   },
