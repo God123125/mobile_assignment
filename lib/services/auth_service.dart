@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:khmer_cultur_app/bases/api_endpoints.dart';
 import 'package:khmer_cultur_app/bases/base_service.dart';
 import 'package:khmer_cultur_app/bases/user_session.dart';
@@ -18,6 +20,37 @@ import 'package:khmer_cultur_app/models/auth/update_password_without_login_reqpo
 import 'package:khmer_cultur_app/models/auth/verify_model.dart';
 
 class AuthService extends BaseService {
+  Future<bool> uploadProfileImage(File imageFile) async {
+    try {
+      final token = await UserSession.getToken(); // ✅ get token
+
+      final url = Uri.parse(ApiEndpoints.updateProfile());
+
+      var request = http.MultipartRequest('PATCH', url);
+
+      request.files.add(
+        await http.MultipartFile.fromPath('profile', imageFile.path),
+      );
+
+      // ✅ attach token
+      request.headers.addAll({
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      });
+
+      print("TOKEN => $token"); // 🔥 debug
+
+      final response = await request.send();
+
+      print("STATUS => ${response.statusCode}");
+
+      return response.statusCode == 200;
+    } catch (e) {
+      print("Upload error: $e");
+      return false;
+    }
+  }
+
   Future<PersonalInfoResponse?> getPersonalInfo() async {
     try {
       final url = ApiEndpoints.getPersonalInfo;

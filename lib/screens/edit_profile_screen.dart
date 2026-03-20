@@ -1,24 +1,88 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:khmer_cultur_app/services/auth_service.dart';
 import 'package:khmer_cultur_app/widgets/bottom_nav.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({super.key});
+  final String fullName;
+  final String email;
+  final String phone;
+  final String profileImage;
+
+  const EditProfileScreen({
+    super.key,
+    required this.fullName,
+    required this.email,
+    required this.phone,
+    required this.profileImage,
+  });
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  final TextEditingController _fullNameController = TextEditingController(text: "Kim Mina");
-  final TextEditingController _emailController = TextEditingController(text: "kimmina@gmail.com");
-  final TextEditingController _phoneController = TextEditingController(text: "0886545434");
+  late TextEditingController _fullNameController;
+  late TextEditingController _emailController;
+  late TextEditingController _phoneController;
+  final AuthService _authService = AuthService();
+  bool _isLoading = false;
+  File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
 
   @override
-  void dispose() {
-    _fullNameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+
+    _fullNameController = TextEditingController(text: widget.fullName);
+    _emailController = TextEditingController(text: widget.email);
+    _phoneController = TextEditingController(text: widget.phone);
+  }
+
+  Future<void> _pickImage() async {
+    final picked = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (picked != null) {
+      setState(() {
+        _selectedImage = File(picked.path);
+      });
+    }
+  }
+
+  void _showMessage(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : Colors.green,
+      ),
+    );
+  }
+
+  Future<void> _updateProfile() async {
+    if (_selectedImage == null) {
+      _showMessage("Please select image", isError: true);
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final success = await _authService.uploadProfileImage(_selectedImage!);
+
+      if (success) {
+        _showMessage("Profile updated successfully");
+
+        Navigator.pop(context, true); // 🔥 return result
+      } else {
+        _showMessage("Upload failed", isError: true);
+      }
+    } catch (e) {
+      _showMessage("Something went wrong", isError: true);
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -42,7 +106,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         color: Colors.grey.shade200,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(Icons.arrow_back, color: Color(0xFF2C2C2C), size: 20),
+                      child: Icon(
+                        Icons.arrow_back,
+                        color: Color(0xFF2C2C2C),
+                        size: 20,
+                      ),
                     ),
                     onPressed: () {
                       Navigator.pop(context);
@@ -75,16 +143,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       CircleAvatar(
                         radius: 60,
                         backgroundColor: Colors.grey.shade300,
-                        backgroundImage: AssetImage('assets/images/welcom1.png'),
+                        backgroundImage: _selectedImage != null
+                            ? FileImage(_selectedImage!)
+                            : (widget.profileImage.isNotEmpty
+                                  ? NetworkImage(widget.profileImage)
+                                  : const AssetImage(
+                                          'assets/images/welcom1.png',
+                                        )
+                                        as ImageProvider),
                       ),
                       // Edit Button Overlay
                       Positioned(
                         bottom: -5,
                         right: -5,
                         child: GestureDetector(
-                          onTap: () {
-                            // Handle profile picture edit
-                          },
+                          onTap: _pickImage,
                           child: Container(
                             width: 36,
                             height: 36,
@@ -93,7 +166,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               shape: BoxShape.circle,
                               border: Border.all(color: Colors.white, width: 3),
                             ),
-                            child: Icon(Icons.edit, color: Colors.white, size: 18),
+                            child: Icon(
+                              Icons.edit,
+                              color: Colors.white,
+                              size: 18,
+                            ),
                           ),
                         ),
                       ),
@@ -112,15 +189,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Full Name Field
-                      _buildInputField(label: "FULL NAME", controller: _fullNameController),
+                      _buildInputField(
+                        label: "FULL NAME",
+                        controller: _fullNameController,
+                      ),
                       SizedBox(height: 20),
 
                       // Email Field
-                      _buildInputField(label: "EMAIL", controller: _emailController),
+                      _buildInputField(
+                        label: "EMAIL",
+                        controller: _emailController,
+                      ),
                       SizedBox(height: 20),
 
                       // Phone Number Field
-                      _buildInputField(label: "PHONE NUMBER", controller: _phoneController),
+                      _buildInputField(
+                        label: "PHONE NUMBER",
+                        controller: _phoneController,
+                      ),
                       SizedBox(height: 40),
 
                       // Save Button
@@ -128,24 +214,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
-                          onPressed: () {
-                            // Handle save action
-                            Navigator.pop(context);
-                          },
+                          onPressed: _isLoading ? null : _updateProfile,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                             elevation: 0,
                           ),
-                          child: Text(
-                            "SAVE",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              letterSpacing: 1,
-                            ),
-                          ),
+                          child: _isLoading
+                              ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text(
+                                  "SAVE",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
                         ),
                       ),
                       SizedBox(height: 20),
@@ -161,7 +255,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildInputField({required String label, required TextEditingController controller}) {
+  Widget _buildInputField({
+    required String label,
+    required TextEditingController controller,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -184,7 +281,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             controller: controller,
             style: TextStyle(fontSize: 16, color: Color(0xFF2C2C2C)),
             decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
               focusedBorder: InputBorder.none,

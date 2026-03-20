@@ -14,7 +14,6 @@ class PersonalInfoScreen extends StatefulWidget {
 
 class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   UserModel? user;
-  
 
   @override
   void initState() {
@@ -72,13 +71,22 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   ),
                   // Edit Button
                   TextButton(
-                    onPressed: () {
-                      Navigator.push(
+                    onPressed: () async {
+                      final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const EditProfileScreen(),
+                          builder: (context) => EditProfileScreen(
+                            fullName: user?.name ?? "",
+                            email: user?.email ?? "",
+                            phone: user?.phone ?? "",
+                            profileImage: user?.profile ?? "",
+                          ),
                         ),
                       );
+
+                      if (result == true) {
+                        loadUser(); // 🔥 refresh profile
+                      }
                     },
                     child: Text(
                       "EDIT",

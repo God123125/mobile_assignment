@@ -13,6 +13,7 @@ class ApiEndpoints {
   static String resendCode() =>'$baseUrl/mobile-users/resend-code';
   static String requestToEmail() =>'$baseUrl/mobile-users/request-to-email';
   static String updateInfo() =>'$baseUrl/mobile-users/update-account';
+  static String updateProfile() =>'$baseUrl/mobile-users/update-profile';
 
   //get
   static String get getPersonalInfo => '$baseUrl/mobile-users/personal-info';
