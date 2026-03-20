@@ -5,6 +5,7 @@ class SummaryTotalWidget extends StatelessWidget {
   final double totalSave;
   final int qty;
   final VoidCallback? onOrder;
+  final bool isLoading; // <-- new
 
   const SummaryTotalWidget({
     super.key,
@@ -12,13 +13,14 @@ class SummaryTotalWidget extends StatelessWidget {
     required this.totalSave,
     required this.qty,
     this.onOrder,
+    this.isLoading = false, // default false
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 20,horizontal: 20),
-      padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 20),
+      margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
       decoration: BoxDecoration(
         color: const Color(0xFFE9ECEF),
         borderRadius: BorderRadius.circular(30),
@@ -60,16 +62,25 @@ class SummaryTotalWidget extends StatelessWidget {
                 ),
                 elevation: 0,
               ),
-              onPressed: qty > 0 ? onOrder : null,
-              child: const Text(
-                "Order",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  letterSpacing: 1,
-                  color: Colors.white
-                ),
-              ),
+              onPressed: qty > 0 && !isLoading ? onOrder : null,
+              child: isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text(
+                      "Order",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        letterSpacing: 1,
+                        color: Colors.white,
+                      ),
+                    ),
             ),
           ),
         ],

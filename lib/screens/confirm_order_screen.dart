@@ -6,7 +6,6 @@ import 'package:khmer_cultur_app/models/store_model.dart';
 import 'package:khmer_cultur_app/screens/address_screen.dart';
 import 'package:khmer_cultur_app/screens/done_screen.dart';
 import 'package:khmer_cultur_app/screens/payment_screen.dart';
-// import 'package:khmer_cultur_app/screens/track_order_screen.dart';
 import 'package:khmer_cultur_app/services/address_service.dart';
 import 'package:khmer_cultur_app/services/cart_storage_service.dart';
 import 'package:khmer_cultur_app/services/order_service.dart';
@@ -34,155 +33,111 @@ class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
   Store? store;
   double deliveryFee = 0.0;
   double discount = 0.0;
-  String remark = ""; // new field for remarks
+  String remark = "";
   List<Product> get filteredProducts => widget.items.keys.toList();
+  String estimatedTime = "";
+  String distance = "";
+  bool isLoadingLocation = false;
+  bool isSubmitting = false;
 
   @override
   void initState() {
     super.initState();
     _loadStore();
-    _loadDefaultAddress(); // load first address
+    _loadDefaultAddress();
   }
 
-  // Future<void> _submitOrder() async {
-  //   final token = await UserSession.getToken();
-  //   if (token == null) {
-  //     ScaffoldMessenger.of(
-  //       context,
-  //     ).showSnackBar(const SnackBar(content: Text("Please login first")));
-  //     return;
-  //   }
-
-  //   if (store == null) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text("Store information not loaded")),
-  //     );
-  //     return;
-  //   }
-
-  //   // Convert cart items to OrderProduct
-  //   final products = widget.items.entries.map((entry) {
-  //     final product = entry.key;
-  //     final qty = entry.value;
-  //     return OrderProduct(
-  //       name: product.name,
-  //       qty: qty,
-  //       price: product.priceAfterDiscount,
-  //       store: product.store,
-  //       imageUrl: product.imageUrl,
-  //       subtotal: product.priceAfterDiscount * qty,
-  //     );
-  //   }).toList();
-
-  //   // Compute estimated delivery time
-  //   final estimatedDeliveryTime = LocationUtils.getEstimatedTime(store: store!);
-
-  //   // Build OrderRequest
-  //   final order = OrderRequest(
-  //     deliveryFee: deliveryFee,
-  //     paymentMethod: paymentMethod.toLowerCase() == "cash on delivery"
-  //         ? "cash"
-  //         : "online",
-  //     products: products,
-  //     remark: remark.isNotEmpty ? remark : null,
-  //     estimatedDeliveryTime: estimatedDeliveryTime,
-  //     totalDiscount: totalSaved > 0 ? totalSaved : null,
-  //   );
-
-  //   final success = await OrderService().checkout(order);
-
-  //   if (!mounted) return;
-
-  //   if (success) {
-  //     await CartStorageService.clearAllCarts();
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text("Order placed successfully 🎉"),
-  //         backgroundColor: Colors.green,
-  //       ),
-  //     );
-
-  //     Future.delayed(const Duration(seconds: 1), () {
-  //       Navigator.pushReplacement(
-  //         context,
-  //         MaterialPageRoute(builder: (_) => DoneScreen()),
-  //       );
-  //     });
-  //   } else {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text("Failed to place order ❌"),
-  //         backgroundColor: Colors.red,
-  //       ),
-  //     );
-  //   }
-  // }
   Future<void> _submitOrder() async {
-  final token = await UserSession.getToken();
-  if (token == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Please login first")),
-    );
-    return;
-  }
+    setState(() => isSubmitting = true);
 
-  if (store == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Store information not loaded")),
-    );
-    return;
-  }
+    final token = await UserSession.getToken();
+    if (token == null) {
+      setState(() => isSubmitting = false);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Please login first")));
+      return;
+    }
 
-  // Convert cart items to OrderProduct
-  final products = widget.items.entries.map((entry) {
-    final product = entry.key;
-    final qty = entry.value;
-    return OrderProduct(
-      name: product.name,
-      qty: qty,
-      price: product.priceAfterDiscount,
-      store: product.store,
-      imageUrl: product.imageUrl,
-      subtotal: product.priceAfterDiscount * qty,
-    );
-  }).toList();
-
-  // Compute estimated delivery time
-  final estimatedDeliveryTime = LocationUtils.getEstimatedTime(store: store!);
-
-  // Build OrderRequest
-  final order = OrderRequest(
-    deliveryFee: deliveryFee,
-    paymentMethod: paymentMethod.toLowerCase() == "cash on delivery"
-        ? "cash"
-        : "online",
-    products: products,
-    remark: remark.isNotEmpty ? remark : null,
-    estimatedDeliveryTime: estimatedDeliveryTime,
-    totalDiscount: totalSaved > 0 ? totalSaved : 0, // never null
-  );
-
-  try {
-    final success = await OrderService().checkout(order);
-
-    if (!mounted) return;
-
-    if (success) {
-      await CartStorageService.clearAllCarts();
+    if (store == null) {
+      setState(() => isSubmitting = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Order placed successfully 🎉"),
-          backgroundColor: Colors.green,
-        ),
+        const SnackBar(content: Text("Store information not loaded")),
       );
+      return;
+    }
 
-      Future.delayed(const Duration(seconds: 1), () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => DoneScreen()),
+    // Get saved latitude & longitude from storage
+    final lat = await AddressStorageService.getSelectedLat();
+    final lon = await AddressStorageService.getSelectedLon();
+
+    if (lat == null || lon == null) {
+      setState(() => isSubmitting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please select delivery address")),
+      );
+      return;
+    }
+
+    // Map cart items to OrderProduct
+    final products = widget.items.entries.map((entry) {
+      final product = entry.key;
+      final qty = entry.value;
+      return OrderProduct(
+        name: product.name,
+        qty: qty,
+        price: product.priceAfterDiscount,
+        store: product.store,
+        imageUrl: product.imageUrl,
+        subtotal: product.priceAfterDiscount * qty,
+      );
+    }).toList();
+
+    // Build the order
+    final order = OrderRequest(
+      deliveryFee: deliveryFee,
+      paymentMethod: paymentMethod.toLowerCase() == "cash on delivery"
+          ? "cash"
+          : "online",
+      products: products,
+      remark: remark.isNotEmpty ? remark : null,
+      estimatedDeliveryTime: estimatedTime,
+      totalDiscount: totalSaved > 0 ? totalSaved : 0,
+      latitude: lat,
+      longitude: lon,
+    );
+
+    try {
+      final success = await OrderService().checkout(order);
+
+      if (!mounted) return;
+      setState(() => isSubmitting = false);
+
+      if (success) {
+        await CartStorageService.clearAllCarts();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Order placed successfully 🎉"),
+            backgroundColor: Colors.green,
+          ),
         );
-      });
-    } else {
+        Future.delayed(const Duration(seconds: 1), () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => DoneScreen()),
+          );
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Failed to place order ❌"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() => isSubmitting = false);
+      print("Order submission error: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Failed to place order ❌"),
@@ -190,17 +145,7 @@ class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
         ),
       );
     }
-  } catch (e) {
-    // Debug info if backend rejects JSON
-    print("Order submission error: $e");
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Failed to place order ❌"),
-        backgroundColor: Colors.red,
-      ),
-    );
   }
-}
 
   double get totalSaved {
     double sum = 0;
@@ -240,7 +185,11 @@ class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
           "${firstAddress.street}, ${firstAddress.city}, ${firstAddress.province}, ${firstAddress.country}";
 
       // Save it to storage
-      await AddressStorageService.saveSelectedAddress(fullAddress);
+      await AddressStorageService.saveSelectedAddress(
+        address: fullAddress,
+        lat: firstAddress.lat,
+        lon: firstAddress.lng,
+      );
 
       setState(() {
         address = fullAddress;
@@ -274,6 +223,65 @@ class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
           ) ??
           0.0;
     });
+    await _loadLocationInfo();
+  }
+
+  Future<void> _loadLocationInfo() async {
+    if (!mounted) return;
+
+    setState(() => isLoadingLocation = true);
+
+    final time = await LocationUtils.getEstimatedTime(store: store!);
+    final dist = await LocationUtils.getDistanceKm(store: store!);
+
+    if (!mounted) return;
+
+    setState(() {
+      estimatedTime = time;
+      distance = dist;
+      isLoadingLocation = false;
+    });
+  }
+
+  Future<void> _reloadLocationAfterAddressChange() async {
+    if (store == null) return;
+
+    final lat = await AddressStorageService.getSelectedLat();
+    final lon = await AddressStorageService.getSelectedLon();
+
+    if (lat == null || lon == null) return;
+
+    setState(() => isLoadingLocation = true);
+
+    // Update delivery fee
+    final feeStr = LocationUtils.getDeliveryFee(
+      store: store!,
+      userLat: lat,
+      userLon: lon,
+    );
+    final newFee = double.tryParse(feeStr.replaceAll("\$", "")) ?? 0.0;
+
+    // Update distance + time
+    final newDistance = await LocationUtils.getDistanceKm(
+      store: store!,
+      userLat: lat,
+      userLon: lon,
+    );
+
+    final newTime = LocationUtils.getEstimatedTime(
+      store: store!,
+      userLat: lat,
+      userLon: lon,
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      deliveryFee = newFee;
+      distance = newDistance;
+      estimatedTime = newTime;
+      isLoadingLocation = false;
+    });
   }
 
   @override
@@ -283,8 +291,22 @@ class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Order", style: TextStyle(color: Colors.white)),
+        centerTitle: true,
+        title: Text("Confirm Order", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.blue,
+        elevation: 0,
+        leading: IconButton(
+          icon: Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(25),
+            ),
+            child: const Icon(Icons.chevron_left, size: 32, color: Colors.grey),
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: Stack(
         children: [
@@ -411,13 +433,33 @@ class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                Text(
-                                  "${LocationUtils.getEstimatedTime(store: store!)} • ${LocationUtils.getDistanceKm(store: store!)}",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.orange.shade800,
-                                  ),
-                                ),
+                                isLoadingLocation
+                                    ? Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 12,
+                                            height: 12,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 6),
+                                          const Text(
+                                            "Calculating...",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.orange,
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : Text(
+                                        "$estimatedTime • $distance",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.orange.shade800,
+                                        ),
+                                      ),
                               ],
                             ),
                           ],
@@ -505,6 +547,7 @@ class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
                           setState(() {
                             address = result;
                           });
+                          await _reloadLocationAfterAddressChange();
                         }
                       },
                       child: Container(
@@ -527,6 +570,7 @@ class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
                                 style: const TextStyle(color: Colors.grey),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.end,
                               ),
                             ),
                             const SizedBox(width: 5),
@@ -574,11 +618,12 @@ class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
               totalPrice: total,
               totalSave: totalSaved,
               qty: widget.items.values.fold(0, (p, e) => p + e),
-              onOrder: widget.items.isNotEmpty
+              onOrder: widget.items.isNotEmpty && !isSubmitting
                   ? () {
                       _submitOrder();
                     }
                   : null,
+              isLoading: isSubmitting, // <-- add this property in your widget
             ),
           ),
         ],

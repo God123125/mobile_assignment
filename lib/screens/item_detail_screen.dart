@@ -41,6 +41,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   bool isFeedbackLoading = true;
   bool showQtySelector = false;
   List<Product> _storeProducts = [];
+  String distance = "Loading...";
+  String deliveryFee = "Loading...";
 
   @override
   void initState() {
@@ -48,7 +50,6 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
     _loadFavoriteStatus();
     _loadStore();
     _loadCartAndProducts();
-
     // Add listener for cart changes
     _cartService.addListener(_onCartChanged);
   }
@@ -57,6 +58,20 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   void dispose() {
     _cartService.removeListener(_onCartChanged);
     super.dispose();
+  }
+
+  Future<void> _loadLocationInfo() async {
+    if (store == null) return;
+
+    final dist = await LocationUtils.getDistanceKm(store: store!);
+    final fee = await LocationUtils.getDeliveryFee(store: store!);
+
+    if (mounted) {
+      setState(() {
+        distance = dist;
+        deliveryFee = fee;
+      });
+    }
   }
 
   void _onCartChanged() {
@@ -160,7 +175,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
         store = found;
       });
 
-      _loadFeedback(); // load feedback after store found
+      _loadFeedback(); 
+      _loadLocationInfo();
     }
   }
 
@@ -288,8 +304,6 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
     if (isFeedbackLoading || store == null) {
       return const ItemDetailShimmer();
     }
-    final distance = LocationUtils.getDistanceKm(store: store!);
-    final deliveryFee = LocationUtils.getDeliveryFee(store: store!);
 
     return Scaffold(
       extendBodyBehindAppBar: true,

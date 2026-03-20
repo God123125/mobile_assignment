@@ -45,6 +45,8 @@ class OrderRequest {
   final String? remark;
   final String? estimatedDeliveryTime;
   final double? totalDiscount;
+  final double? latitude;
+  final double? longitude;
 
   OrderRequest({
     required this.deliveryFee,
@@ -53,6 +55,8 @@ class OrderRequest {
     this.remark,
     this.estimatedDeliveryTime,
     this.totalDiscount,
+    this.latitude,
+    this.longitude,
   });
 
   factory OrderRequest.fromJson(Map<String, dynamic> json) {
@@ -67,6 +71,8 @@ class OrderRequest {
       totalDiscount: json['total_discount'] != null
           ? (json['total_discount'] as num).toDouble()
           : null,
+      latitude: json['latitude'],
+      longitude: json['longitude'],
     );
   }
 
@@ -79,6 +85,8 @@ class OrderRequest {
       if (estimatedDeliveryTime != null)
         "estimated_delivery_time": estimatedDeliveryTime,
       if (totalDiscount != null) "total_discount": totalDiscount,
+      if (latitude != null) "latitude": latitude!.toString(),
+      if (longitude != null) "longitude": longitude!.toString(),
     };
   }
 }
@@ -115,14 +123,12 @@ class OrderProductModel {
     );
   }
 }
+
 class AddressModel {
   final double latitude;
   final double longitude;
 
-  AddressModel({
-    required this.latitude,
-    required this.longitude,
-  });
+  AddressModel({required this.latitude, required this.longitude});
 
   factory AddressModel.fromJson(Map<String, dynamic> json) {
     return AddressModel(
@@ -131,16 +137,13 @@ class AddressModel {
     );
   }
 }
+
 class StoreModel {
   final String id;
   final String name;
   final AddressModel? address; // ✅ nullable
 
-  StoreModel({
-    required this.id,
-    required this.name,
-    this.address,
-  });
+  StoreModel({required this.id, required this.name, this.address});
 
   factory StoreModel.fromJson(Map<String, dynamic> json) {
     return StoreModel(
@@ -152,6 +155,7 @@ class StoreModel {
     );
   }
 }
+
 class OrderModel {
   final String id;
   final List<OrderProductModel> products;
@@ -163,7 +167,9 @@ class OrderModel {
   final String? estimatedDeliveryTime;
   final double totalDiscount;
   final DateTime createdAt;
-  final String? storeurl; // ✅ NEW
+  final String? storeurl;
+  final String? latitude;
+  final String? longitude;
 
   OrderModel({
     required this.id,
@@ -177,6 +183,8 @@ class OrderModel {
     required this.totalDiscount,
     required this.createdAt,
     this.storeurl,
+    this.longitude,
+    this.latitude,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
@@ -193,7 +201,8 @@ class OrderModel {
       estimatedDeliveryTime: json['estimated_delivery_time'],
       totalDiscount: (json['total_discount'] as num?)?.toDouble() ?? 0.0,
       createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
-      storeurl: json['store_url'], // ✅ FIX
+      longitude: json['longitude'],
+      latitude: json['latitude'],
     );
   }
 }

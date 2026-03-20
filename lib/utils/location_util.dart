@@ -2,16 +2,16 @@ import 'dart:math';
 
 import 'package:khmer_cultur_app/bases/user_session.dart';
 import 'package:khmer_cultur_app/models/store_model.dart';
+import 'package:khmer_cultur_app/services/address_service.dart';
 
 class LocationUtils {
-  /// Compute distance in km
-  static String getDistanceKm({
+  static Future<String> getDistanceKm({
     required Store store,
     double? userLat,
     double? userLon,
-  }) {
-    userLat ??= UserSession.getLatitude();
-    userLon ??= UserSession.getLongitude();
+  }) async {
+    userLat ??= await AddressStorageService.getSelectedLat();
+    userLon ??= await AddressStorageService.getSelectedLon();
 
     if (userLat == null || userLon == null) return "Unknown";
 

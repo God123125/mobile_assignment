@@ -55,18 +55,26 @@ class _AddressScreenState extends State<AddressScreen> {
         savedAddress =
             "${first.street}, ${first.city}, ${first.province}, ${first.country}";
         selectedIndex = 0;
-        await AddressStorageService.saveSelectedAddress(savedAddress!);
+        await AddressStorageService.saveSelectedAddress(
+          address: savedAddress!,
+          lat: first.lat,
+          lon: first.lng, 
+        );
       }
     }
 
     setState(() => isLoading = false);
   }
 
-  /// Select address and save locally
   Future<void> _selectAddress(AddressModel address, int index) async {
     final fullAddress =
         "${address.street}, ${address.city}, ${address.province}, ${address.country}";
-    await AddressStorageService.saveSelectedAddress(fullAddress);
+
+    await AddressStorageService.saveSelectedAddress(
+      address: fullAddress,
+      lat: address.lat,
+      lon: address.lng,
+    );
 
     setState(() {
       selectedIndex = index;
@@ -183,7 +191,7 @@ class _AddressScreenState extends State<AddressScreen> {
               },
             ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 40,horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 16),
         child: ElevatedButton.icon(
           onPressed: () async {
             final result = await Navigator.push(

@@ -40,10 +40,13 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
   double? userLat;
   double? userLon;
   Map<String, int> _quantities = {};
+  String distance = "Loading...";
+  String deliveryFee = "Loading...";
 
   @override
   void initState() {
     super.initState();
+    _loadLocationInfo();
     loadProducts();
     _loadSavedQuantities();
     _cartService.addListener(_onCartChanged);
@@ -59,6 +62,17 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
     if (mounted) {
       setState(() {
         _quantities = _cartService.getCartForStore(widget.store.id);
+      });
+    }
+  }
+  Future<void> _loadLocationInfo() async {
+    final dist = await LocationUtils.getDistanceKm(store: widget.store);
+    final fee = await LocationUtils.getDeliveryFee(store: widget.store);
+
+    if (mounted) {
+      setState(() {
+        distance = dist;
+        deliveryFee = fee;
       });
     }
   }
@@ -148,8 +162,6 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final distance = LocationUtils.getDistanceKm(store: widget.store);
-    final deliveryFee = LocationUtils.getDeliveryFee(store: widget.store);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
